@@ -51,3 +51,7 @@ Correction du zéro : le système de réglage doit permettre de corriger des for
 selon l’axe X dans l’intervalle suivant : −1 mN <= Fparasite <= 1 mN
 
 """
+
+# Energie ressort = 0.5*K*x^2
+# K_RCC (N/m)= (l^2+3pl+3p^2)(8*E*b*h^3)/(l^3*12)
+# K_Col (Nm/rad)  = (2*E*b*pow(e,2.5))/(9*pi*sqrt(r))
