@@ -50,5 +50,4 @@ qui consiste à minimiser la valeur RF(keq,min)
 Correction du zéro : le système de réglage doit permettre de corriger des forces parasites
 selon l’axe X dans l’intervalle suivant : −1 mN <= Fparasite <= 1 mN
 
-
 """
