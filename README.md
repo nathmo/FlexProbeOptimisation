@@ -13,3 +13,11 @@ so that the total ridity can be as close to zero as possible.
 
 # pivot à col
 ![img_1.png](img_1.png)
+
+
+# table a lame
+![img_4.png](img_4.png)
+
+
+# rigidité negative
+![img_3.png](img_3.png)
