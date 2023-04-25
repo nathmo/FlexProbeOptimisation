@@ -123,7 +123,9 @@ class NeckedDownColPivot(SpringBlade):
 
 class NegativeRigidityBlade(SpringBlade):
   def k(self, x):
-      #
+      # K=sqrt(F(x)/EI)
+      # p = preel /l
+      # 2*(EIK)(Kl*cos(Kl)-sin(Kl)[1+(Kl)^2p+(Kl)^2p^2])/(Klsin(Kl)+2(cos(Kl)-1))
       return
   def print(self):
       print("I'm a necked down Pivot")
