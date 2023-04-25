@@ -106,9 +106,25 @@ class RCCPivot(SpringBlade):
       print("K = " + str(self.k()))
 
 class NeckedDownColPivot(SpringBlade):
+  def __init__(self, b, l, h, E, r, e):
+    super().__init__(b, l, h, E)
+    self.r = r # blade width (metal block thickness
+    self.e = e # blade lenght
   def k(self, x):
       # (2*E*b*pow(e,2.5))/(9*pi*sqrt(r))
-      return (2*self.E*self.b*pow(self.e, 2.5))/()
+      return (2*self.E*self.b*pow(self.e, 2.5))/(9*math.pi*math.sqrt(self.r))
+  def print(self):
+      print("I'm a necked down Pivot")
+      print("width = "+str(self.b))
+      print("lenght = " + str(self.l))
+      print("thickness = " + str(self.h))
+      print("Young modulus = " + str(self.E))
+      print("K = " + str(self.k()))
+
+class NegativeRigidityBlade(SpringBlade):
+  def k(self, x):
+      #
+      return
   def print(self):
       print("I'm a necked down Pivot")
       print("width = "+str(self.b))
