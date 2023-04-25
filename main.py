@@ -62,3 +62,58 @@ selon l’axe X dans l’intervalle suivant : −1 mN <= Fparasite <= 1 mN
 # K_Col (Nm/rad)  = (2*E*b*pow(e,2.5))/(9*pi*sqrt(r))
 # K_table (N/m) = (2*E*b*h^3)/(l^3)
 # K_neg (N/m) =
+
+import math
+class SpringBlade:
+  def __init__(self, b, l, h, E):
+    self.b = b # blade width (metal block thickness
+    self.l = l # blade lenght
+    self.h = h # blade thickness (EDM thickness)
+    self.E = E # young modulus
+  def k(self, x):
+      # (l^2+3pl+3p^2)(8*E*b*h^3)/(l^3*24)
+      return (pow(self.l, 2)+3*self.p*self.l+3*pow(self.p, 2))*(8*self.E*self.b*pow(self.h, 3))/(pow(self.l, 3)*24)
+  def print(self):
+      print("I'm a simple blade")
+      print("width = "+str(self.b))
+      print("lenght = " + str(self.l))
+      print("thickness = " + str(self.h))
+      print("Young modulus = " + str(self.E))
+      print("K = " + str(self.k()))
+
+class Table2Lame(SpringBlade):
+  def k(self, x):
+      # (2*E*b*h^3)/(l^3)
+      return 2*self.E*self.b*pow((self.h/self.l), 3)
+  def print(self):
+      print("I'm a 2 Blade Table")
+      print("width = "+str(self.b))
+      print("lenght = " + str(self.l))
+      print("thickness = " + str(self.h))
+      print("Young modulus = " + str(self.E))
+      print("K = " + str(self.k()))
+
+class RCCPivot(SpringBlade):
+  def k(self, x):
+      # (l^2+3pl+3p^2)(8*E*b*h^3)/(l^3*12)
+      return (super().k())*2
+  def print(self):
+      print("I'm a RCC Pivot")
+      print("width = "+str(self.b))
+      print("lenght = " + str(self.l))
+      print("thickness = " + str(self.h))
+      print("Young modulus = " + str(self.E))
+      print("K = " + str(self.k()))
+
+class NeckedDownColPivot(SpringBlade):
+  def k(self, x):
+      # (2*E*b*pow(e,2.5))/(9*pi*sqrt(r))
+      return (2*self.E*self.b*pow(self.e, 2.5))/()
+  def print(self):
+      print("I'm a necked down Pivot")
+      print("width = "+str(self.b))
+      print("lenght = " + str(self.l))
+      print("thickness = " + str(self.h))
+      print("Young modulus = " + str(self.E))
+      print("K = " + str(self.k()))
+
