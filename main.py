@@ -190,8 +190,6 @@ def show(self):
       print("K = " + str(self.k()))
 
 def main():
-    x = np.linspace(-1, 20, 1000)
-
     """
     1 pivot RCC angulaire
     1 table à lame
@@ -207,24 +205,6 @@ def main():
     r necked down radius
     e thined zone of necked down
     """
-    # Define the mecanism
-    b = 0.01 # 10 mm
-    E = 200000000000 #200 GPa
-    h = 0.0001 # 100 micron
-    pivotRCC      = RCCPivot(b , 0.02, h, E, 0.0075) # +- 1'068. N/m after conversion from Couple/rad
-    table         = Table2Lame(b , 0.02, h, E) # 500 N/m
-    col           = NeckedDownColPivot(b , 0.02, h, E, 0.003, 0.0001) # 1'617.92 N/m after conversion from Couple/rad
-    negativeBlade = NegativeRigidityBlade(b , 0.02, h, E) #250 N/m
-
-    y = []
-    #y = pivotRCC.energyStored(x, x1, x2) + table.energyStored(x, x1, x2) + col.energyStored(x, x1, x2) + negativeRCC.energyStored(x, x1, x2)
-    for i in range(0, len(x)):
-        ktot = negativeBlade.k(0, x[i], 0) + \
-               mp.sqrt(2)*negativeBlade.k(0, x[i], 0) + \
-               2*col.k(0, x[i], 0) + \
-               table.k(0, x[i], 0) + \
-               pivotRCC.k(0, x[i], 0)
-        y.append(col.k(0, x[i], 0).real)
     # setting the axes at the centre
     fig = plt.figure()
     ax = fig.add_subplot(1, 1, 1)
@@ -235,8 +215,40 @@ def main():
     ax.xaxis.set_ticks_position('bottom')
     ax.yaxis.set_ticks_position('left')
 
+    # Define the mecanism
+    b = 0.01 # 10 mm
+    E = 200000000000 #200 GPa
+    h = 0.0001 # 100 micron
+    pivotRCC      = RCCPivot(b , 0.02, h, E, 0.0075) # +- 1'068. N/m after conversion from Couple/rad
+    table         = Table2Lame(b , 0.02, h, E) # 500 N/m
+    col           = NeckedDownColPivot(b , 0.02, h, E, 0.003, 0.0001) # 1'617.92 N/m after conversion from Couple/rad
+    negativeBlade = NegativeRigidityBlade(b , 0.02, h, E) #250 N/m
+
+    yK = []
+
+    f = np.linspace(-1, 20, 10) # force Preload
+    for i in range(0, len(f)):
+        ktot = negativeBlade.k(0, f[i], 0) + \
+               mp.sqrt(2)*negativeBlade.k(0, f[i], 0) + \
+               2*col.k(0, f[i], 0) + \
+               table.k(0, f[i], 0) + \
+               pivotRCC.k(0, f[i], 0)
+        yK.append(ktot.real)
+    x = np.linspace(-0.001, 0.001, 100) #position
+    for i in range(0, len(f)):
+        yE = []
+        for j in range(0, len(x)):
+            Etot = negativeBlade.energyStored(x[j], f[i], 0) + \
+               mp.sqrt(2)*negativeBlade.energyStored(x[j], f[i], 0) + \
+               2*col.energyStored(x[j], f[i], 0) + \
+               table.energyStored(x[j], f[i], 0) + \
+               pivotRCC.energyStored(x[j], f[i], 0)
+            yE.append(Etot.real)
+        plt.plot(x, yE, 'b')
+
     # plot the function
-    plt.plot(x, y, 'r')
+    #plt.plot(f, yK, 'r')
+    # plot the function
 
     # show the plot
     plt.show()
