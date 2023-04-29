@@ -66,6 +66,8 @@ selon l’axe X dans l’intervalle suivant : −1 mN <= Fparasite <= 1 mN
 import math
 import matplotlib.pyplot as plt
 import numpy as np
+from mpmath import mp
+
 class SpringBlade:
   def __init__(self, b, l, h, E):
     self.b = b # blade width (metal block thickness
@@ -73,11 +75,13 @@ class SpringBlade:
     self.h = h # blade thickness (EDM thickness)
     self.E = E # young modulus
   def k(self, x, x1, x2):
-      # (l^2)(8*E*b*h^3)/(l^3*24)
-      return (pow(self.l, 2))*(8*self.E*self.b*pow(self.h, 3))/(pow(self.l, 3)*24)
+      # I=bh^3/12
+      # K=12*E*I/l^3
+      I = (self.b * pow(self.h, 3)) / (12)
+      return (12*self.E*I)/(pow(self.l, 3))
   def energyStored(self, x, x1, x2):
       return 0.5*self.k(x, x1, x2)*pow(x, 2)
-  def print(self):
+  def show(self):
       print("I'm a simple blade")
       print("width = "+str(self.b))
       print("lenght = " + str(self.l))
@@ -87,9 +91,11 @@ class SpringBlade:
 
 class Table2Lame(SpringBlade):
   def k(self, x, x1, x2):
-      # (2*E*b*h^3)/(l^3)
-      return 2*self.E*self.b*pow((self.h/self.l), 3)
-  def print(self):
+      # I=bh^3/12
+      # K=2*12*E*I/l^3  (2 fois car 2 lame)
+      I = (self.b * pow(self.h, 3)) / (12)
+      return 2*(12*self.E*I)/(pow(self.l, 3))
+  def show(self):
       print("I'm a 2 Blade Table")
       print("width = "+str(self.b))
       print("lenght = " + str(self.l))
@@ -104,7 +110,7 @@ class RCCPivot(SpringBlade):
   def k(self, x, x1, x2):
       # (l^2+3pl+3p^2)(8*E*b*h^3)/(l^3*12)
       return 2*(pow(self.l, 2)+3*self.p*self.l+3*pow(self.p, 2))*(8*self.E*self.b*pow(self.h, 3))/(pow(self.l, 3)*24)
-  def print(self):
+  def show(self):
       print("I'm a RCC Pivot")
       print("width = "+str(self.b))
       print("lenght = " + str(self.l))
@@ -120,7 +126,7 @@ class NeckedDownColPivot(SpringBlade):
   def k(self, x, x1, x2):
       # (2*E*b*pow(e,2.5))/(9*pi*sqrt(r))
       return (2*self.E*self.b*pow(self.e, 2.5))/(9*math.pi*math.sqrt(self.r))
-  def print(self):
+  def show(self):
       print("I'm a necked down Pivot")
       print("width = "+str(self.b))
       print("lenght = " + str(self.l))
@@ -128,7 +134,7 @@ class NeckedDownColPivot(SpringBlade):
       print("Young modulus = " + str(self.E))
       print("K = " + str(self.k()))
 
-class NegativeRigidityBlade(SpringBlade):
+class NegativeRigidityRCC(SpringBlade):
   def __init__(self, b, l, h, E, p):
     super().__init__(b, l, h, E)
     self.p = p # dead zone of the hinge
@@ -137,11 +143,46 @@ class NegativeRigidityBlade(SpringBlade):
       # p = preel / l
       # 2*(EIK)(Kl*cos(Kl)-sin(Kl)[1+(Kl)^2p+(Kl)^2p^2])/(Klsin(Kl)+2(cos(Kl)-1))
       f=x1
-      K=math.sqrt(f/(self.b*pow(self.h, 3)*self.E))
-      p=self.p / self.l
-      return 2*(self.E*self.b*pow(self.h, 3)*K)*(K*self.l*math.cos(K*self.l)-math.sin(K*self.l)*(1+pow(K*self.l, 2)*p/self.l+pow(K*self.p, 2)))/(12*(K*self.l*math.sin(K*self.l)+2*(math.cos(K*self.l)-1)))
-  def print(self):
-      print("I'm a negative stiffnessRCC pivot down Pivot")
+      I= self.b*self.h*self.h*self.h/12
+      R = 0.02
+      A = math.sqrt(f / (self.E * I))
+      B = 4 * self.E * I * (1 + 3 * self.p / self.l + 3 * pow(self.p / self.l, 2)) / (self.l * R * R)
+      C = 2 * self.E * I * A * (
+                  A * self.l * math.cos(A * self.l) - math.sin(A * self.l) * (1 + pow(A, 2) * self.l * self.p + pow(A * self.p, 2))) / (
+                      R * R * (A * self.l * math.sin(A * self.l)) + 2 * (math.cos(A * self.l) - 1))
+      return B+C
+class NegativeRigidityBlade(SpringBlade):
+  def k(self, x, x1, x2):
+      """
+        $N_0 = \text{charge à appliquer sur la lame pour une rigidité nul}$
+        $N = \text{charge à appliquer sur la lame}$
+        $E = \text{module de young}$
+        $l = \text{longeur de la laimme}$
+        $b = \text{largeur de la lame}$
+        $h = \text{épaisseur de la lame}$
+        $$I = \frac{b*h^3}{12}$$
+        $$\gamma = \frac{N}{N_0}$$
+        $$N_0=\frac{\pi ^2 *E*I}{l^2}$$
+        $$K_0=\frac{12*E*I}{l^3}$$
+        $$z(\gamma)=\frac{\gamma*\pi ^2}{12(\frac{2}{\pi*\sqrt{\gamma}}*tan(\frac{\pi*\sqrt{\gamma}}{2})-1)}$$
+        $$K=K_0*Z(\gamma)$$
+        apres simplification :
+        $$I = \frac{b*h^3}{12}$$
+        $$Q=\frac{2}{\pi*\sqrt{\frac{N*l^2}{\pi ^2 *E*I}}}$$
+        $$K=\frac{N}{l*(Q*tan(\frac{1}{Q})-1)}$$
+      :param x:
+      :param x1:
+      :param x2:
+      :return:
+      """
+      N=x1
+      I = (self.b*pow(self.h, 3))/(12)
+      Q = 2/(mp.pi*mp.sqrt(N*pow(self.l, 2)/(pow(mp.pi, 2)*self.E*I)))
+      K = N/(self.l*(Q*mp.tan(1/Q)-1))
+      return K
+
+def show(self):
+      print("I'm a Negative Rigidity Blade")
       print("width = "+str(self.b))
       print("lenght = " + str(self.l))
       print("thickness = " + str(self.h))
@@ -149,7 +190,7 @@ class NegativeRigidityBlade(SpringBlade):
       print("K = " + str(self.k()))
 
 def main():
-    x = np.linspace(-0.001, 0.001, 100)
+    x = np.linspace(-1, 20, 1000)
 
     """
     1 pivot RCC angulaire
@@ -167,15 +208,23 @@ def main():
     e thined zone of necked down
     """
     # Define the mecanism
-    pivotRCC    = RCCPivot(0.01, 0.02, 0.0001, 200000000000, 0.0075)
-    table       = Table2Lame(0.01, 0.02, 0.0001, 200000000000)
-    col         = NeckedDownColPivot(0.01, 0.02, 0.0001, 200000000000, 0.003, 0.0001)
-    negativeRCC = NegativeRigidityBlade(0.01, 0.02, 0.0001, 200000000000, 0.0075)
-    # the function, which is y = x^2 here
-    x1 = 7623.805
-    x2 = 0
-    y = pivotRCC.energyStored(x, x1, x2) + table.energyStored(x, x1, x2) + col.energyStored(x, x1, x2) + negativeRCC.energyStored(x, x1, x2)
+    b = 0.01 # 10 mm
+    E = 200000000000 #200 GPa
+    h = 0.0001 # 100 micron
+    pivotRCC      = RCCPivot(b , 0.02, h, E, 0.0075) # +- 1'068. N/m after conversion from Couple/rad
+    table         = Table2Lame(b , 0.02, h, E) # 500 N/m
+    col           = NeckedDownColPivot(b , 0.02, h, E, 0.003, 0.0001) # 1'617.92 N/m after conversion from Couple/rad
+    negativeBlade = NegativeRigidityBlade(b , 0.02, h, E) #250 N/m
 
+    y = []
+    #y = pivotRCC.energyStored(x, x1, x2) + table.energyStored(x, x1, x2) + col.energyStored(x, x1, x2) + negativeRCC.energyStored(x, x1, x2)
+    for i in range(0, len(x)):
+        ktot = negativeBlade.k(0, x[i], 0) + \
+               mp.sqrt(2)*negativeBlade.k(0, x[i], 0) + \
+               2*col.k(0, x[i], 0) + \
+               table.k(0, x[i], 0) + \
+               pivotRCC.k(0, x[i], 0)
+        y.append(col.k(0, x[i], 0).real)
     # setting the axes at the centre
     fig = plt.figure()
     ax = fig.add_subplot(1, 1, 1)
@@ -193,4 +242,8 @@ def main():
     plt.show()
 
 if __name__ == "__main__":
+    print("computing")
+    mp.dps = 100
+    print(mp)
     main()
+    print("done")
