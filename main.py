@@ -1,10 +1,140 @@
 """
-truc a calculer :
-1) E(x) [J] : Energie potentielle élastique totale du corps d’épreuve en fonction du déplacement x.
+Ce script calcul les différent parametre d'un système à lame.
+Plus spécifiquement, une série de primitive sont définis tel que des lames, des cols, des lames préchargé etc...
+il suffit d'utiliser la feuille excel qui est lier au CAD pour changer les parametres.
+toutes les figures sont graphé dans des images qui peuvent être visualiser dans un document markdown.
+
+feel free to use this script if its of any help to you.
+(no waranty on the exactitude of the result given tho)
+
+"""
+
+import math
+import matplotlib.pyplot as plt
+import numpy as np
+from mpmath import mp
+import pandas as pd
+import os
+from flexLibrary import *
+import openpyxl
+import logging
+from pint import UnitRegistry
+import shutil
+
+def computeEnergy(mechanism, path):
+    # setting the axes at the centre
+    fig = plt.figure()
+    ax = fig.add_subplot(1, 1, 1)
+    ax.spines['left'].set_position('center')
+    ax.spines['bottom'].set_position('zero')
+    ax.spines['right'].set_color('none')
+    ax.spines['top'].set_color('none')
+    ax.xaxis.set_ticks_position('bottom')
+    ax.yaxis.set_ticks_position('left')
+
+    f = np.linspace(-1, 30, 10)  # force Preload
+    x = np.linspace(-0.001, 0.001, 100)  # position
+    for i in range(0, len(f)):
+        yE = []
+        for j in range(0, len(x)):
+            Etot = 0
+            for part in mechanism:
+                Etot = Etot + part.energyStored(x[j], f[i], 0)
+            yE.append(Etot.real)
+        # plot the function
+        plt.plot(x, yE, 'b')
+    # save the plot
+    plt.savefig(os.path.join(path, 'EnergyyAsPreloadPosition.png'))
+
+def computeRigidity(mechanism, path):
+    # setting the axes at the centre
+    fig = plt.figure()
+    ax = fig.add_subplot(1, 1, 1)
+    ax.spines['left'].set_position('center')
+    ax.spines['bottom'].set_position('zero')
+    ax.spines['right'].set_color('none')
+    ax.spines['top'].set_color('none')
+    ax.xaxis.set_ticks_position('bottom')
+    ax.yaxis.set_ticks_position('left')
+
+    yK = []
+
+    f = np.linspace(-1, 20, 10)  # force Preload
+    for i in range(0, len(f)):
+        ktot = 0
+        for part in mechanism:
+            ktot = ktot + part.k(0, f[i], 0)
+        yK.append(ktot.real)
+    # plot the function
+    plt.plot(f, yK, 'r')
+    plt.savefig(os.path.join(path, 'RigidityAsPreload.png'))
+
+def main():
+    # set the precision
+    mp.dps = 100 #number of significant digit used for calculation
+    print(mp)
+
+    # parse the excel sheet containing the physical parameters (in the Autodesk Inventor Format) (no column title
+    # first column = name, seconde column = value, third = unit
+    #example : bladeThicknessTablePushing       0.1     mm
+    excelPATH = ""
+    for file in os.listdir("."):
+        if file.endswith(".xlsx"):
+            excelPATH = file # only use the first sheet found.
+            break
+    df = pd.read_excel(excelPATH, header=None)
+    print("found file : " + str(excelPATH))
+    print("here is a sample of what's in it. ensure it looks right.")
+    print(df.head())
+    parameters = {}
+    ureg = UnitRegistry()
+    for i in range(0, len(df. index)):
+        row = df.loc[i, :].values.flatten().tolist() # extract each row as a list
+        result = ureg.parse_expression((str(row[1])+" "+str(row[2]))).to(ureg.meter) #convert it to meter
+        parameters[row[0]] = result.magnitude
+    print(parameters)
+
+    # define the mechanism
+    b = 0.01 # 10 mm
+    E = 200000000000 #200 GPa
+    h = 0.0001 # 100 micron
+    pivotRCC      = RCCPivot(b , 0.018, parameters["BladeThicknessRCC"], E, 0.005) # +- 1'068. N/m after conversion from Couple/rad
+    wheelAnchor   = SpringBlade(b, 0.0075, parameters["bladeThicknessWheelAnchor"], E)
+    negativeBladePusher = NegativeRigidityBlade(b, 0.02, parameters["bladeThicknessTablePushing"], E) #250 N/m
+    negativeBlade = NegativeRigidityBlade(b, 0.02, parameters["bladeThicknessTable"], E)  # 250 N/m
+    ForceConverter = SpringBlade(b, 0.02, parameters["bladeThicknessForceConverter"], E)  # 250 N/m
+    mechanism = [pivotRCC, pivotRCC,
+                 wheelAnchor, wheelAnchor,
+                 negativeBladePusher, negativeBladePusher, negativeBladePusher,
+                 negativeBlade, negativeBlade , negativeBlade]
+    # create a new folder and copy the markdown template + xlsx parameter to the folder
+    onlydir = [f for f in os.listdir(".") if os.path.isdir(os.path.join(".", f))]
+    max = 0
+    for folder in onlydir:
+        try:
+            if int(folder.split("-")[-1]) > max:
+                max = int(folder.split("-")[-1])
+        except:
+            pass
+    max = max + 1
+    newpath = os.path.join(".", "resultSimulation-"+str(max))
+    if not os.path.exists(newpath):
+        os.makedirs(newpath)
+        shutil.copyfile(excelPATH, os.path.join(newpath, excelPATH))
+        shutil.copyfile("report.md", os.path.join(newpath, "report.md"))
+    # generate the graphs and save them to a new folder
+
+    # 1) E(x) [J] : Energie potentielle élastique totale du corps d’épreuve en fonction du déplacement x.
+    computeEnergy(mechanism, newpath)
+    # 2)  (x) [N] : Caractéristique force-déformation non-linéaire du corps d’épreuve : F (x) = dE(x)/dx
+    computeRigidity(mechanism, newpath)
+    """
+    truc a calculer :
+
 Il s’agit de la somme des énergies potentielles élastiques de toutes les articulations flexibles :
 E(x) = E1(x) + E2(x) + ... + En(x).
 
-2)  (x) [N] : Caractéristique force-déformation non-linéaire du corps d’épreuve : F (x) = dE(x)/dx
+
 
 3) Fpoly3(x) [N] : Caractéristique force-déformation approximée par un polynôme de degrés trois :
 F (x) ∼= Fpoly3(x) = a0 + a1 · x + a2 · x2 + a3 · x3 ;
@@ -55,142 +185,6 @@ selon l’axe X dans l’intervalle suivant : −1 mN <= Fparasite <= 1 mN
 2 pivot à col
 1 lame rigidité négative
 
-"""
-# b largeur, h épaisseur, l longeur
-# Energie ressort = 0.5*K*x^2
-# K_RCC (N/m)= (l^2+3pl+3p^2)(8*E*b*h^3)/(l^3*12)
-# K_Col (Nm/rad)  = (2*E*b*pow(e,2.5))/(9*pi*sqrt(r))
-# K_table (N/m) = (2*E*b*h^3)/(l^3)
-# K_neg (N/m) =
-
-import math
-import matplotlib.pyplot as plt
-import numpy as np
-from mpmath import mp
-
-class SpringBlade:
-  def __init__(self, b, l, h, E):
-    self.b = b # blade width (metal block thickness
-    self.l = l # blade lenght
-    self.h = h # blade thickness (EDM thickness)
-    self.E = E # young modulus
-  def k(self, x, x1, x2):
-      # I=bh^3/12
-      # K=12*E*I/l^3
-      I = (self.b * pow(self.h, 3)) / (12)
-      return (12*self.E*I)/(pow(self.l, 3))
-  def energyStored(self, x, x1, x2):
-      return 0.5*self.k(x, x1, x2)*pow(x, 2)
-  def show(self):
-      print("I'm a simple blade")
-      print("width = "+str(self.b))
-      print("lenght = " + str(self.l))
-      print("thickness = " + str(self.h))
-      print("Young modulus = " + str(self.E))
-      print("K = " + str(self.k()))
-
-class Table2Lame(SpringBlade):
-  def k(self, x, x1, x2):
-      # I=bh^3/12
-      # K=2*12*E*I/l^3  (2 fois car 2 lame)
-      I = (self.b * pow(self.h, 3)) / (12)
-      return 2*(12*self.E*I)/(pow(self.l, 3))
-  def show(self):
-      print("I'm a 2 Blade Table")
-      print("width = "+str(self.b))
-      print("lenght = " + str(self.l))
-      print("thickness = " + str(self.h))
-      print("Young modulus = " + str(self.E))
-      print("K = " + str(self.k()))
-
-class RCCPivot(SpringBlade):
-  def __init__(self, b, l, h, E, p):
-    super().__init__(b, l, h, E)
-    self.p = p # dead zone of the hinge
-  def k(self, x, x1, x2):
-      # (l^2+3pl+3p^2)(8*E*b*h^3)/(l^3*12)
-      return 2*(pow(self.l, 2)+3*self.p*self.l+3*pow(self.p, 2))*(8*self.E*self.b*pow(self.h, 3))/(pow(self.l, 3)*24)
-  def show(self):
-      print("I'm a RCC Pivot")
-      print("width = "+str(self.b))
-      print("lenght = " + str(self.l))
-      print("thickness = " + str(self.h))
-      print("Young modulus = " + str(self.E))
-      print("K = " + str(self.k()))
-
-class NeckedDownColPivot(SpringBlade):
-  def __init__(self, b, l, h, E, r, e):
-    super().__init__(b, l, h, E)
-    self.r = r # blade width (metal block thickness
-    self.e = e # blade lenght
-  def k(self, x, x1, x2):
-      # (2*E*b*pow(e,2.5))/(9*pi*sqrt(r))
-      return (2*self.E*self.b*pow(self.e, 2.5))/(9*math.pi*math.sqrt(self.r))
-  def show(self):
-      print("I'm a necked down Pivot")
-      print("width = "+str(self.b))
-      print("lenght = " + str(self.l))
-      print("thickness = " + str(self.h))
-      print("Young modulus = " + str(self.E))
-      print("K = " + str(self.k()))
-
-class NegativeRigidityRCC(SpringBlade):
-  def __init__(self, b, l, h, E, p):
-    super().__init__(b, l, h, E)
-    self.p = p # dead zone of the hinge
-  def k(self, x, x1, x2):
-      # K=sqrt(F(x)/EI)
-      # p = preel / l
-      # 2*(EIK)(Kl*cos(Kl)-sin(Kl)[1+(Kl)^2p+(Kl)^2p^2])/(Klsin(Kl)+2(cos(Kl)-1))
-      f=x1
-      I= self.b*self.h*self.h*self.h/12
-      R = 0.02
-      A = math.sqrt(f / (self.E * I))
-      B = 4 * self.E * I * (1 + 3 * self.p / self.l + 3 * pow(self.p / self.l, 2)) / (self.l * R * R)
-      C = 2 * self.E * I * A * (
-                  A * self.l * math.cos(A * self.l) - math.sin(A * self.l) * (1 + pow(A, 2) * self.l * self.p + pow(A * self.p, 2))) / (
-                      R * R * (A * self.l * math.sin(A * self.l)) + 2 * (math.cos(A * self.l) - 1))
-      return B+C
-class NegativeRigidityBlade(SpringBlade):
-  def k(self, x, x1, x2):
-      """
-        $N_0 = \text{charge à appliquer sur la lame pour une rigidité nul}$
-        $N = \text{charge à appliquer sur la lame}$
-        $E = \text{module de young}$
-        $l = \text{longeur de la laimme}$
-        $b = \text{largeur de la lame}$
-        $h = \text{épaisseur de la lame}$
-        $$I = \frac{b*h^3}{12}$$
-        $$\gamma = \frac{N}{N_0}$$
-        $$N_0=\frac{\pi ^2 *E*I}{l^2}$$
-        $$K_0=\frac{12*E*I}{l^3}$$
-        $$z(\gamma)=\frac{\gamma*\pi ^2}{12(\frac{2}{\pi*\sqrt{\gamma}}*tan(\frac{\pi*\sqrt{\gamma}}{2})-1)}$$
-        $$K=K_0*Z(\gamma)$$
-        apres simplification :
-        $$I = \frac{b*h^3}{12}$$
-        $$Q=\frac{2}{\pi*\sqrt{\frac{N*l^2}{\pi ^2 *E*I}}}$$
-        $$K=\frac{N}{l*(Q*tan(\frac{1}{Q})-1)}$$
-      :param x:
-      :param x1:
-      :param x2:
-      :return:
-      """
-      N=x1
-      I = (self.b*pow(self.h, 3))/(12)
-      Q = 2/(mp.pi*mp.sqrt(N*pow(self.l, 2)/(pow(mp.pi, 2)*self.E*I)))
-      K = N/(self.l*(Q*mp.tan(1/Q)-1))
-      return K
-
-def show(self):
-      print("I'm a Negative Rigidity Blade")
-      print("width = "+str(self.b))
-      print("lenght = " + str(self.l))
-      print("thickness = " + str(self.h))
-      print("Young modulus = " + str(self.E))
-      print("K = " + str(self.k()))
-
-def main():
-    """
     1 pivot RCC angulaire
     1 table à lame
     2 pivot à col
@@ -205,57 +199,10 @@ def main():
     r necked down radius
     e thined zone of necked down
     """
-    # setting the axes at the centre
-    fig = plt.figure()
-    ax = fig.add_subplot(1, 1, 1)
-    ax.spines['left'].set_position('center')
-    ax.spines['bottom'].set_position('zero')
-    ax.spines['right'].set_color('none')
-    ax.spines['top'].set_color('none')
-    ax.xaxis.set_ticks_position('bottom')
-    ax.yaxis.set_ticks_position('left')
 
-    # Define the mecanism
-    b = 0.01 # 10 mm
-    E = 200000000000 #200 GPa
-    h = 0.0001 # 100 micron
-    pivotRCC      = RCCPivot(b , 0.02, h, E, 0.0075) # +- 1'068. N/m after conversion from Couple/rad
-    table         = Table2Lame(b , 0.02, h, E) # 500 N/m
-    col           = NeckedDownColPivot(b , 0.02, h, E, 0.003, 0.0001) # 1'617.92 N/m after conversion from Couple/rad
-    negativeBlade = NegativeRigidityBlade(b , 0.02, h, E) #250 N/m
 
-    yK = []
 
-    f = np.linspace(-1, 20, 10) # force Preload
-    for i in range(0, len(f)):
-        ktot = negativeBlade.k(0, f[i], 0) + \
-               mp.sqrt(2)*negativeBlade.k(0, f[i], 0) + \
-               2*col.k(0, f[i], 0) + \
-               table.k(0, f[i], 0) + \
-               pivotRCC.k(0, f[i], 0)
-        yK.append(ktot.real)
-    x = np.linspace(-0.001, 0.001, 100) #position
-    for i in range(0, len(f)):
-        yE = []
-        for j in range(0, len(x)):
-            Etot = negativeBlade.energyStored(x[j], f[i], 0) + \
-               mp.sqrt(2)*negativeBlade.energyStored(x[j], f[i], 0) + \
-               2*col.energyStored(x[j], f[i], 0) + \
-               table.energyStored(x[j], f[i], 0) + \
-               pivotRCC.energyStored(x[j], f[i], 0)
-            yE.append(Etot.real)
-        plt.plot(x, yE, 'b')
-
-    # plot the function
-    #plt.plot(f, yK, 'r')
-    # plot the function
-
-    # show the plot
-    plt.show()
 
 if __name__ == "__main__":
-    print("computing")
-    mp.dps = 100
-    print(mp)
     main()
     print("done")
