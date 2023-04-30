@@ -7,6 +7,7 @@ toutes les figures sont graphé dans des images qui peuvent être visualiser dan
 feel free to use this script if its of any help to you.
 (no waranty on the exactitude of the result given tho)
 
+TODO : export other settings like force range, mechanism config, etc to a log file
 """
 
 import math
