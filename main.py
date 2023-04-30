@@ -33,7 +33,7 @@ def computeEnergy(mechanism, path):
     ax.xaxis.set_ticks_position('bottom')
     ax.yaxis.set_ticks_position('left')
 
-    f = np.linspace(-1, 30, 10)  # force Preload
+    f = np.linspace(-1, 40, 10)  # force Preload
     x = np.linspace(-0.001, 0.001, 100)  # position
     for i in range(0, len(f)):
         yE = []
@@ -60,7 +60,7 @@ def computeRigidity(mechanism, path):
 
     yK = []
 
-    f = np.linspace(-1, 20, 10)  # force Preload
+    f = np.linspace(-1, 40, 10)  # force Preload
     for i in range(0, len(f)):
         ktot = 0
         for part in mechanism:
@@ -84,9 +84,11 @@ def main():
             excelPATH = file # only use the first sheet found.
             break
     df = pd.read_excel(excelPATH, header=None)
+    print("")
     print("found file : " + str(excelPATH))
     print("here is a sample of what's in it. ensure it looks right.")
     print(df.head())
+    print("")
     parameters = {}
     ureg = UnitRegistry()
     for i in range(0, len(df. index)):
@@ -96,6 +98,7 @@ def main():
     print(parameters)
 
     # define the mechanism
+    print("--------------------------------------------")
     b = 0.01 # 10 mm
     E = 200000000000 #200 GPa
     h = 0.0001 # 100 micron
@@ -108,7 +111,13 @@ def main():
                  wheelAnchor, wheelAnchor,
                  negativeBladePusher, negativeBladePusher, negativeBladePusher,
                  negativeBlade, negativeBlade , negativeBlade]
+    print("mechanism definition :")
+    for part in mechanism:
+        print("")
+        part.show()
+
     # create a new folder and copy the markdown template + xlsx parameter to the folder
+    print("-------------------------------------------------")
     onlydir = [f for f in os.listdir(".") if os.path.isdir(os.path.join(".", f))]
     max = 0
     for folder in onlydir:
@@ -123,11 +132,14 @@ def main():
         os.makedirs(newpath)
         shutil.copyfile(excelPATH, os.path.join(newpath, excelPATH))
         shutil.copyfile("report.md", os.path.join(newpath, "report.md"))
+    print("create new folder with result :" + newpath)
     # generate the graphs and save them to a new folder
-
+    print("---------------------------------------------------------")
     # 1) E(x) [J] : Energie potentielle élastique totale du corps d’épreuve en fonction du déplacement x.
+    print("compute Energy")
     computeEnergy(mechanism, newpath)
     # 2)  (x) [N] : Caractéristique force-déformation non-linéaire du corps d’épreuve : F (x) = dE(x)/dx
+    print("compute Rigidity")
     computeRigidity(mechanism, newpath)
     """
     truc a calculer :

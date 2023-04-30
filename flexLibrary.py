@@ -20,7 +20,6 @@ class SpringBlade:
       print("lenght = " + str(self.l))
       print("thickness = " + str(self.h))
       print("Young modulus = " + str(self.E))
-      print("K = " + str(self.k()))
 
 class NegativeRigidityBlade(SpringBlade):
   def k(self, x, x1, x2):
@@ -58,7 +57,6 @@ def show(self):
       print("lenght = " + str(self.l))
       print("thickness = " + str(self.h))
       print("Young modulus = " + str(self.E))
-      print("K = " + str(self.k()))
 
 class Table2Lame(SpringBlade):
   def k(self, x, x1, x2):
@@ -72,7 +70,6 @@ class Table2Lame(SpringBlade):
       print("lenght = " + str(self.l))
       print("thickness = " + str(self.h))
       print("Young modulus = " + str(self.E))
-      print("K = " + str(self.k()))
 
 class RCCPivot(SpringBlade):
   def __init__(self, b, l, h, E, p):
@@ -87,7 +84,7 @@ class RCCPivot(SpringBlade):
       print("lenght = " + str(self.l))
       print("thickness = " + str(self.h))
       print("Young modulus = " + str(self.E))
-      print("K = " + str(self.k()))
+
 
 class NeckedDownColPivot(SpringBlade):
   def __init__(self, b, l, h, E, r, e):
@@ -103,7 +100,7 @@ class NeckedDownColPivot(SpringBlade):
       print("lenght = " + str(self.l))
       print("thickness = " + str(self.h))
       print("Young modulus = " + str(self.E))
-      print("K = " + str(self.k()))
+
 
 class NegativeRigidityRCC(SpringBlade):
   def __init__(self, b, l, h, E, p):
@@ -128,4 +125,3 @@ class NegativeRigidityRCC(SpringBlade):
       print("lenght = " + str(self.l))
       print("thickness = " + str(self.h))
       print("Young modulus = " + str(self.E))
-      print("K = " + str(self.k()))
