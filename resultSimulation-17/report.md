@@ -4,16 +4,10 @@
 
 ![EnergyAsPreloadPosition.png](EnergyAsPreloadPosition.png)
 (échelle en unité SI, Joule par metre (avec une précharge N pour chaque courbe))
-attention. la force de précontrainte est calculer est calculer par lame.
-pour avoir la valeurs total il faut multiplier par le nombre de lame qui transmettent la force
-
 # 2) rigidité équivalente en fonction de la précontrainte
 
 ![RigidityAsPreload.png](RigidityAsPreload.png)
 (échelle en unité SI, N/m par N)
-attention. la force de précontrainte est calculer est calculer par lame.
-pour avoir la valeurs total il faut multiplier par le nombre de lame qui transmettent la force
-
 # 3) Fpoly3(x) [N] : Caractéristique force-déformation approximée par un polynôme de degrés trois :
 F (x) ∼= Fpoly3(x) = a0 + a1 · x + a2 · x2 + a3 · x3 ;
 

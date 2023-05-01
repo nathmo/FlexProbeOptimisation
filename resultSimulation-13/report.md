@@ -1,19 +1,12 @@
 # Paramètre utiliser pour le calcul des résultat
 
-# 1) Energie en fonction de la position et différente pré contrainte
+# 0) vérification qu'aucune poutre ne flambe
 
+# 1) Energie en fonction de la position et différente pré contrainte
 ![EnergyAsPreloadPosition.png](EnergyAsPreloadPosition.png)
-(échelle en unité SI, Joule par metre (avec une précharge N pour chaque courbe))
-attention. la force de précontrainte est calculer est calculer par lame.
-pour avoir la valeurs total il faut multiplier par le nombre de lame qui transmettent la force
 
 # 2) rigidité équivalente en fonction de la précontrainte
-
 ![RigidityAsPreload.png](RigidityAsPreload.png)
-(échelle en unité SI, N/m par N)
-attention. la force de précontrainte est calculer est calculer par lame.
-pour avoir la valeurs total il faut multiplier par le nombre de lame qui transmettent la force
-
 # 3) Fpoly3(x) [N] : Caractéristique force-déformation approximée par un polynôme de degrés trois :
 F (x) ∼= Fpoly3(x) = a0 + a1 · x + a2 · x2 + a3 · x3 ;
 
@@ -57,3 +50,22 @@ qui consiste à minimiser la valeur RF(keq,min)
 
 Correction du zéro : le système de réglage doit permettre de corriger des forces parasites
 selon l’axe X dans l’intervalle suivant : −1 mN <= Fparasite <= 1 mN
+
+2 pivot RCC angulaire
+1 table à lame
+2 pivot à col
+1 lame rigidité négative
+
+    1 pivot RCC angulaire
+    1 table à lame
+    2 pivot à col
+    1 pivot RCC rigidité négative
+    
+    b, l, h, E, r, e
+    
+    b blade width (metal block thickness
+    l blade lenght
+    h blade thickness (EDM thickness)
+    E young modulus
+    r necked down radius
+    e thined zone of necked down

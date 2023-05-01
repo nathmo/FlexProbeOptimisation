@@ -1,19 +1,31 @@
+"""
+this file contains class to represent different type of flex spring.
+* Blade
+* Blade with preload (for tunable stiffness)
+* tabel
+* RCC pivot
+* Pivot
+* necked down pivot / col
+
+each class offer a method to compute the rigidity, the stored energy and show the parameter of the blade.
+"""
 import math
 from mpmath import mp
 
 class SpringBlade:
-  def __init__(self, b, l, h, E):
+  def __init__(self, b, l, h, E, mouvmentConversionIn):
     self.b = b # blade width (metal block thickness
     self.l = l # blade lenght
     self.h = h # blade thickness (EDM thickness)
     self.E = E # young modulus
+    self.mouvmentConversionIn = mouvmentConversionIn
   def k(self, x, x1, x2):
       # I=bh^3/12
       # K=12*E*I/l^3
       I = (self.b * pow(self.h, 3)) / (12)
       return (12*self.E*I)/(pow(self.l, 3))
   def energyStored(self, x, x1, x2):
-      return 0.5*self.k(x, x1, x2)*pow(x, 2)
+      return 0.5*self.k(self.mouvmentConversionIn(x), x1, x2)*pow(self.mouvmentConversionIn(x), 2)
   def show(self):
       print("I'm a simple blade")
       print("width = "+str(self.b))
@@ -72,12 +84,13 @@ class Table2Lame(SpringBlade):
       print("Young modulus = " + str(self.E))
 
 class RCCPivot(SpringBlade):
-  def __init__(self, b, l, h, E, p):
-    super().__init__(b, l, h, E)
+  def __init__(self, b, l, h, E, mouvmentConversionIn, p):
+    super().__init__(b, l, h, E, mouvmentConversionIn)
     self.p = p # dead zone of the hinge
   def k(self, x, x1, x2):
       # (l^2+3pl+3p^2)(8*E*b*h^3)/(l^3*12)
       return 2*(pow(self.l, 2)+3*self.p*self.l+3*pow(self.p, 2))*(8*self.E*self.b*pow(self.h, 3))/(pow(self.l, 3)*24)
+
   def show(self):
       print("I'm a RCC Pivot")
       print("width = "+str(self.b))
@@ -100,7 +113,6 @@ class NeckedDownColPivot(SpringBlade):
       print("lenght = " + str(self.l))
       print("thickness = " + str(self.h))
       print("Young modulus = " + str(self.E))
-
 
 class NegativeRigidityRCC(SpringBlade):
   def __init__(self, b, l, h, E, p):
