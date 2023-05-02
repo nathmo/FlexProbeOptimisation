@@ -23,13 +23,15 @@ import logging
 from pint import UnitRegistry
 import shutil
 
+forceMin = 2.9
+forceMax = 3.3
 def computeEnergy(mechanism, path):
     # setting the axes at the centre
     fig = plt.figure()
     ax = fig.add_subplot(1, 1, 1)
 
-    f = np.linspace(-0.00001, -0.1, 100)  # force Preload
-    x = np.linspace(-0.0005, 0.0005, 100)  # position
+    f = np.linspace(forceMin, forceMax, 20)  # force Preload
+    x = np.linspace(-0.0011, 0.0011, 100)  # position
     for i in range(0, len(f)):
         yE = []
         for j in range(0, len(x)):
@@ -47,17 +49,41 @@ def computeRigidity(mechanism, path):
     fig = plt.figure()
     ax = fig.add_subplot(1, 1, 1)
 
-    yK = []
-
-    f = np.linspace(0.00001, 0.1, 100)  # force Preload
+    f = np.linspace(forceMin, forceMax, 20)  # force Preload
+    x = np.linspace(-0.0011, 0.0011, 100)  # position
     for i in range(0, len(f)):
-        ktot = 0
-        for part in mechanism:
-            ktot = ktot + part.k(0, f[i], 0)
-        yK.append(ktot.real)
-    # plot the function
-    plt.plot(f, yK, 'r')
+        yE = []
+        for j in range(0, len(x)):
+            Etot = 0
+            for part in mechanism:
+                Etot = Etot + mp.diff(lambda x: part.energyStored(x, f[i], 0), x[j])
+            yE.append(Etot.real)
+        # plot the function
+        print(" k : "+str(yE[0]/x[0]))
+        plt.plot(x, yE, 'r')
     plt.savefig(os.path.join(path, 'RigidityAsPreload.png'))
+
+def computeRigidityTylor(mechanism, path):
+    # setting the axes at the centre
+    fig = plt.figure()
+    ax = fig.add_subplot(1, 1, 1)
+
+    f = np.linspace(forceMin, forceMax, 20)  # force Preload
+    x = np.linspace(-0.0011, 0.0011, 100)  # position
+    for i in range(0, len(f)):
+        yE = []
+        for j in range(0, len(x)):
+            Etot = 0
+            parameter = [0, 0, 0]
+            for part in mechanism:
+                p = mp.taylor(lambda x: part.energyStored(x, f[i], 0), 0.1, 3)
+                parameter[0] = parameter[0] + p[0]
+                parameter[1] = parameter[1] + p[1]
+                parameter[2] = parameter[2] + p[2]
+            yE.append(mp.polyval(parameter[::-1], x[i]).real)
+        # plot the function
+        plt.plot(x, yE, 'r')
+    plt.savefig(os.path.join(path, 'RigidityAsPreloadPolynomial.png'))
 
 def main():
     # set the precision
@@ -96,10 +122,9 @@ def main():
     negativeBladePusher = NegativeRigidityBlade(b_converter, 0.02, parameters["bladeThicknessTablePushing"], E, f_x) #250 N/m
     negativeBlade = NegativeRigidityBlade(b_converter, 0.02, parameters["bladeThicknessTable"], E, f_x)  # 250 N/m
     ForceConverter = SpringBlade(b_converter, 0.02, parameters["bladeThicknessForceConverter"], E, f_x)  # 250 N/m
-    mechanism = [pivotRCC, pivotRCC,
-                 wheelAnchor, wheelAnchor,
-                 negativeBladePusher, negativeBladePusher, negativeBladePusher,
-                 negativeBlade, negativeBlade , negativeBlade]
+
+    mechanism = [ForceConverter, ForceConverter]
+    # mechanism = [pivotRCC, pivotRCC,wheelAnchor, wheelAnchor,negativeBladePusher, negativeBladePusher, negativeBladePusher, negativeBlade, negativeBlade , negativeBlade]
     print("mechanism definition :")
     for part in mechanism:
         print("")
@@ -130,7 +155,9 @@ def main():
     # 2)  (x) [N] : Caractéristique force-déformation non-linéaire du corps d’épreuve : F (x) = dE(x)/dx
     print("compute Rigidity")
     computeRigidity(mechanism, newpath)
-
+    # 3) Polynome qui approxime 2)
+    print("compute Rigidity Polynomial")
+    computeRigidityTylor(mechanism, newpath)
 
 
 
