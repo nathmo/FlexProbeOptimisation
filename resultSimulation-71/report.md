@@ -44,7 +44,6 @@ Plage de réglage demandé : -1mF à 1mF
 nombre de position possible du moteur = 4'500
 Rfz = deltaFparasite / nombre de position possible du moteur = 2mN/4500= 4.444*10^{-7}[N]
 
-rigidité des lames : (2 lames*ratio transformation de 8 -> 8000 N/m par lame)
 ## 3.3 débattement des articulation
 (formule mouvement relatif)
 0.5 mm sur toute les lames

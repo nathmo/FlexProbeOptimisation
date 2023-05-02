@@ -25,13 +25,15 @@ import shutil
 
 forceMin = 2.9
 forceMax = 3.3
+rangeMin = -0.0006 #-0.0011
+rangeMax = 0.0006 #-0.0011
 def computeEnergy(mechanism, path):
     # setting the axes at the centre
     fig = plt.figure()
     ax = fig.add_subplot(1, 1, 1)
 
     f = np.linspace(forceMin, forceMax, 20)  # force Preload
-    x = np.linspace(-0.0011, 0.0011, 100)  # position
+    x = np.linspace(rangeMin, rangeMax, 100)  # position
     for i in range(0, len(f)):
         yE = []
         for j in range(0, len(x)):
@@ -50,7 +52,7 @@ def computeRigidity(mechanism, path):
     ax = fig.add_subplot(1, 1, 1)
 
     f = np.linspace(forceMin, forceMax, 20)  # force Preload
-    x = np.linspace(-0.0011, 0.0011, 100)  # position
+    x = np.linspace(rangeMin, rangeMax, 100)  # position
     for i in range(0, len(f)):
         yE = []
         for j in range(0, len(x)):
@@ -69,7 +71,7 @@ def computeRigidityTylor(mechanism, path):
     ax = fig.add_subplot(1, 1, 1)
 
     f = np.linspace(forceMin, forceMax, 20)  # force Preload
-    x = np.linspace(-0.0011, 0.0011, 100)  # position
+    x = np.linspace(rangeMin, rangeMax, 100)  # position
     for i in range(0, len(f)):
         yE = []
         for j in range(0, len(x)):
@@ -119,11 +121,12 @@ def main():
     E = 200000000000 #200 GPa
     pivotRCC      = RCCPivot(b_wheel , 0.018, parameters["BladeThicknessRCC"], E, f_XtoRotation, 0.005) # +- 1'000. N/m after conversion from Couple/rad
     wheelAnchor   = SpringBlade(b_converter, 0.0075, parameters["bladeThicknessWheelAnchor"], E, f_XYRotation) #
-    negativeBladePusher = NegativeRigidityBlade(b_converter, 0.02, parameters["bladeThicknessTablePushing"], E, f_x) #250 N/m
-    negativeBlade = NegativeRigidityBlade(b_converter, 0.02, parameters["bladeThicknessTable"], E, f_x)  # 250 N/m
+    negativeBladePusher = NegativeRigidityBlade(b_converter, 0.012, parameters["bladeThicknessTablePushing"], E, f_x) #250 N/m
+    negativeBlade = NegativeRigidityBlade(b_converter, 0.018, parameters["bladeThicknessTable"], E, f_x)  # 250 N/m
     ForceConverter = SpringBlade(b_converter, 0.02, parameters["bladeThicknessForceConverter"], E, f_x)  # 250 N/m
-
-    mechanism = [ForceConverter, ForceConverter]
+    ZeroConverter = SpringBlade(b_converter, 0.011, parameters["bladeThicknessZeroConverter"], E, f_x)  # 2000 N/m
+    mechanism = [ZeroConverter, ZeroConverter]  # reglage zero
+    # mechanism = [ForceConverter, ForceConverter] # k_eq
     # mechanism = [pivotRCC, pivotRCC,wheelAnchor, wheelAnchor,negativeBladePusher, negativeBladePusher, negativeBladePusher, negativeBlade, negativeBlade , negativeBlade]
     print("mechanism definition :")
     for part in mechanism:
