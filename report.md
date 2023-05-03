@@ -22,32 +22,11 @@ qui consiste à minimiser la valeur RF(keq,min)
 Correction du zéro : le système de réglage doit permettre de corriger des forces parasites
 selon l’axe X dans l’intervalle suivant : −1 mN <= Fparasite <= 1 mN
 
+nous allons dabord dimmensionné le système de correction du zéro 
+car sa rigidité doit êre prise en compte dans la rigidité total du système.
 
-## 3.1 rigidité 
-meme actionneur utilisé pour les deux fonction :
-q_p = 0.05 mm / tour (vis différentiel : 0.5 mm et 0.45 mm )
-d_p = M2.5 et M3
-R_alphap = 1.6° (backlash du reducteur) sinon 0.024245°=360/(512 code/tour * 29 (réducteur))
-R_p = 0.003367 micron (q_p/(512*29 (reducteur))) ou 0.22222 micron (backlash)
-plage de p max = 0-1mm
 
-force que le pusher doit pouvoir appliquer
-forceMin = 5.5*3=16.5 N
-forceMax = 5.70=17.1 N
-(si possible pré contraindre le pusher pour economiser un ressort + améliorer gamme dynamique)
-
-k table pusher = delta F sur x = 0.6N/0.001 m=600 N/m
-table vrai = 750 N/m
-preload of 0.022 m -> 22mm ... ()
-
-forceMin = 5.5*3=11.1 N
-forceMax = 5.70=17.1 N
-donc avec 6000 N/m de vrai table il nous faut une précontrainte de 1.85mm
-c'est acceptable
-
-(vérifier que les lame supporte une déformation de 3mm)
-
-## 3.2 réglage du zéro
+## 3.1 réglage du zéro
 meme actionneur utilisé pour les deux fonction :
 q_z = 0.05 mm / tour (vis différentiel : 0.5 mm et 0.45 mm )
 d_z = M2.5 et M3
@@ -60,12 +39,72 @@ Plage de réglage demandé : -1mF à 1mF
 nombre de position possible du moteur = 4'500
 Rfz = deltaFparasite / nombre de position possible du moteur = 2mN/4500= 4.444*10^{-7}[N]
 
-rigidité des lames : (2 lames*ratio transformation de 8 -> 8000 N/m par lame)
+dans le but de diminuer l'impacte de la rigidité de la table sur le reste du systeme,
+nous avons utiliser la roue pour diminué la course rensentie par la table
+à lame d'un facteur 8. en échange il nous à fallu fournir 8 fois plus de force
+donc pas +-1mN mais +-8mN
+rigidité des lames : (2 lames*ratio transformation de 8 -> 16 N/m par lame)
 
+nous avons donc tuner les parametre de notre table pour obtenir la rigidité total de 16 N/m:
+avec une table à 2 lamme de de 11.98 mm de long, 8mm de largeur et 100 um d'épaisseur
+
+![computeRigidityTableZero.png](computeRigidityTableZero.png)
+
+## 3.2 rigidité 
+meme actionneur utilisé pour les deux fonction :
+q_p = 0.05 mm / tour (vis différentiel : 0.5 mm et 0.45 mm )
+d_p = M2.5 et M3
+R_alphap = 1.6° (backlash du reducteur) sinon 0.024245°=360/(512 code/tour * 29 (réducteur))
+R_p = 0.003367 micron (q_p/(512*29 (reducteur))) ou 0.22222 micron (backlash)
+plage de p max = 0-1mm
+
+pour déterminer la force que le pusher doit appliquer on graphe le k_eq du system
+jusqua trouver les bonnes forces
+on aimerais que nos rigidité sois entre : 50 N/m et 
+
+pour la borne minimal on veux une résolution 500 nN
+mais la résoltion du cateur est de 10 micron
+ce qui nous donne une rigidité à 0.05 N/m ou mieux (0 N/m)
+
+![RigidityAsPositionANDPreload.png](RigidityAsPositionANDPreload.png)
+
+on peut voir que les parametre qui rentre bien dans le range sont :
+2.53 N au minimum
+2.63 N au maximum
+Ces valeurs représente la force à appliquer par lamme.
+comme il y as 3 lamme  en parralel, il faut en réalité 
+forceMin = 2.53*3=7.59 N
+forceMax = 2.63*3=7.89 N
+si on voulais maximiser la résoltion il faudrait que le
+0.3 N de force revienne à une course d'un 1mm de la table à lamme.
+hors cela impliquerais une déformation de 26 mm latérallement.
+
+hors pour des raison géométrique, il est difficile d'avoir une tel course.
+
+nous choississont donc limiter la course de notre table à 2 mm 
+de plus nous allons précontraidre la table de 1mm à l'assemblage 
+pour profiter de la précharge et supprimer le jeux sur l'actionneur
+en plus de profiter d'une meilleure résolution de la force de précharge
+dans la région d'interet.
+
+cela impose à notre table d'avoir une rigidité de 7.89N/0.002m=3'945 N/m
+et nous pourrons ainsi obtenir une résolution de rigidité.
+pour se faire on utilise le nombre de position distincte que l'axe linéaire
+peut prendre (4500) répartis sur la plage d'un 1mm ce qui nous donne
+3.945 N / 4500 point = 0.8766 mN de résolution pour la force de précharge
+
+de plus on vois qu'on est largement en dessous de la force maximal que 
+peut tollérer l'actionneur linéaire.
+
+(vérifier que les lame supporte une déformation de 3mm (demander TRISTAN))
+
+on voit sur le graphique que la table a lame à bien la rigidité de 3945 N/m
+attendu.
+![computeRigidityTableKeq.png](computeRigidityTableKeq.png)
 ## 3.3 débattement des articulation
 (formule mouvement relatif)
 0.5 mm sur toute les lames
-(légerement moins sur la roue est nécéssaire mais simplifier aussi à 0.5 mm)
+(légerement plus sur la roue est nécéssaire mais simplifier à 1 mm)
 
 ## 3.4 contrainte max flamage + casse chaque lame
 
@@ -80,14 +119,14 @@ donc on se limite à 50 Newton par sécurité
 ( et  on vois par la suite que la force de précontrainte est inférieur dans tout les cas)
 
 ## 3.6 Energie de chaque systeme + total 
-Energie de chaque systeme + total pour le réglage de force max et min sur toute la plage de x
 ![EnergyAsPreloadPosition.png](EnergyAsPreloadPosition.png)
+Energie total pour le réglage de force sur toute la plage de x
 (échelle en unité SI, Joule par metre (avec une précharge N pour chaque courbe))
 attention. la force de précontrainte est calculer est calculer par lame.
 pour avoir la valeurs total il faut multiplier par le nombre de lame qui transmettent la force
 et la au point de rigidité minimum avec un graph pour chaque élément
 
-graph de l'energie dans chaque lammes en fonction de la position
+Energie de chaque systeme + 
 ![computeEnergyk_minPart.png](computeEnergyk_minPart.png)
 
 ## 3.7 dérivé energie = Force en fonction de X
@@ -104,9 +143,9 @@ F (x) ∼= Fpoly3(x) = a0 + a1 · x + a2 · x2 + a3 · x3 ;
 ![RigidityAsPositionANDPreload.png](RigidityAsPositionANDPreload.png)
 
 ## 3.10 non-linéarité relative mu pour p min et max
-mu_r=a_3/a_1
+mu_r = 3 = 3 = 3 = 3 = 3 = 3 = 3 = 3 = 3 = 3 = 3 = 3 = 3 = 3 = 3 = 3 = 3 = 3 = 3 = 3 = 3 = 3 = 3 = 3 = 3 = 3 = 3 = 3 = 3 = 3 = 3 = 3 = 3 = 3 = 3 = 3 = 3 = 3 = 3 = 3 = 3 = 3 = 3 = 3 = 3 = 3 = 3=a_3/a_1
 
-mu_r = 3
+mu_r = 3 = 3 = 3 = 3 = 3 = 3 = 3 = 3 = 3 = 3 = 3 = 3 = 3 = 3 = 3 = 3 = 3 = 3 = 3 = 3 = 3 = 3 = 3 = 3 = 3 = 3 = 3 = 3 = 3 = 3 = 3 = 3 = 3 = 3 = 3 = 3 = 3 = 3 = 3 = 3 = 3 = 3 = 3 = 3 = 3 = 3 = 3 = 3
 
 (dans le cas p_min et p_max)
 
