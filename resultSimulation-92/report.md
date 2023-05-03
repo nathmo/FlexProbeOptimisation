@@ -39,13 +39,7 @@ forceMax = 5.70=17.1 N
 k table pusher = delta F sur x = 0.6N/0.001 m=600 N/m
 table vrai = 750 N/m
 preload of 0.022 m -> 22mm ... ()
-
-forceMin = 5.5*3=11.1 N
-forceMax = 5.70=17.1 N
-donc avec 6000 N/m de vrai table il nous faut une précontrainte de 1.85mm
-c'est acceptable
-
-(vérifier que les lame supporte une déformation de 3mm)
+delta de force addmissible max = 6N/1mm ->  6'000 N/m
 
 ## 3.2 réglage du zéro
 meme actionneur utilisé pour les deux fonction :

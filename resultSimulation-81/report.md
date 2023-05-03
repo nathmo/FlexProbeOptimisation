@@ -1,4 +1,4 @@
-# Paramètre utiliser pour le calcul des résultat
+1# Paramètre utiliser pour le calcul des résultat
 
 ![img_1.png](img_1.png)
 ![img_2.png](img_2.png)
@@ -31,22 +31,6 @@ R_alphap = 1.6° (backlash du reducteur) sinon 0.024245°=360/(512 code/tour * 2
 R_p = 0.003367 micron (q_p/(512*29 (reducteur))) ou 0.22222 micron (backlash)
 plage de p max = 0-1mm
 
-force que le pusher doit pouvoir appliquer
-forceMin = 5.5*3=16.5 N
-forceMax = 5.70=17.1 N
-(si possible pré contraindre le pusher pour economiser un ressort + améliorer gamme dynamique)
-
-k table pusher = delta F sur x = 0.6N/0.001 m=600 N/m
-table vrai = 750 N/m
-preload of 0.022 m -> 22mm ... ()
-
-forceMin = 5.5*3=11.1 N
-forceMax = 5.70=17.1 N
-donc avec 6000 N/m de vrai table il nous faut une précontrainte de 1.85mm
-c'est acceptable
-
-(vérifier que les lame supporte une déformation de 3mm)
-
 ## 3.2 réglage du zéro
 meme actionneur utilisé pour les deux fonction :
 q_z = 0.05 mm / tour (vis différentiel : 0.5 mm et 0.45 mm )
@@ -61,7 +45,6 @@ nombre de position possible du moteur = 4'500
 Rfz = deltaFparasite / nombre de position possible du moteur = 2mN/4500= 4.444*10^{-7}[N]
 
 rigidité des lames : (2 lames*ratio transformation de 8 -> 8000 N/m par lame)
-
 ## 3.3 débattement des articulation
 (formule mouvement relatif)
 0.5 mm sur toute les lames

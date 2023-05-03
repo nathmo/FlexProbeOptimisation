@@ -16,3 +16,7 @@ def f_XYRotation(x):
 def f_XtoRotation(x):
     hypotenuse = 0.02 #20 mm radius of wheel to hole anchor (sorry for the dirty Hardcoded value...)
     return mp.asin(x/hypotenuse)
+
+def f_Xby8(x):
+    ratioReductionWheel = 8
+    return x/ratioReductionWheel

@@ -23,10 +23,10 @@ import logging
 from pint import UnitRegistry
 import shutil
 
-forceMin = 2.9
-forceMax = 3.3
-rangeMin = -0.0006 #-0.0011
-rangeMax = 0.0006 #-0.0011
+forceMin = 5.5
+forceMax = 5.70
+rangeMin = -0.0011 #-0.0006 #-0.0011
+rangeMax = 0.0011 #0.0006 #0.0011
 def computeEnergy(mechanism, path):
     # setting the axes at the centre
     fig = plt.figure()
@@ -61,7 +61,6 @@ def computeRigidity(mechanism, path):
                 Etot = Etot + mp.diff(lambda x: part.energyStored(x, f[i], 0), x[j])
             yE.append(Etot.real)
         # plot the function
-        print(" k : "+str(yE[0]/x[0]))
         plt.plot(x, yE, 'r')
     plt.savefig(os.path.join(path, 'RigidityAsPreload.png'))
 
@@ -124,10 +123,10 @@ def main():
     negativeBladePusher = NegativeRigidityBlade(b_converter, 0.012, parameters["bladeThicknessTablePushing"], E, f_x) #250 N/m
     negativeBlade = NegativeRigidityBlade(b_converter, 0.018, parameters["bladeThicknessTable"], E, f_x)  # 250 N/m
     ForceConverter = SpringBlade(b_converter, 0.02, parameters["bladeThicknessForceConverter"], E, f_x)  # 250 N/m
-    ZeroConverter = SpringBlade(b_converter, 0.011, parameters["bladeThicknessZeroConverter"], E, f_x)  # 2000 N/m
-    mechanism = [ZeroConverter, ZeroConverter]  # reglage zero
-    # mechanism = [ForceConverter, ForceConverter] # k_eq
-    # mechanism = [pivotRCC, pivotRCC,wheelAnchor, wheelAnchor,negativeBladePusher, negativeBladePusher, negativeBladePusher, negativeBlade, negativeBlade , negativeBlade]
+    ZeroConverter = SpringBlade(b_converter, 0.011, parameters["bladeThicknessZeroConverter"], E, f_Xby8)  # 2000 N/m
+    # mechanism = [ZeroConverter, ZeroConverter]  # reglage zero
+    mechanism = [ForceConverter, ForceConverter] # k_eq
+    # mechanism = [pivotRCC, pivotRCC, wheelAnchor, wheelAnchor, negativeBladePusher, negativeBladePusher, negativeBladePusher, negativeBlade, negativeBlade , negativeBlade, ZeroConverter, ZeroConverter]
     print("mechanism definition :")
     for part in mechanism:
         print("")
