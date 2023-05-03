@@ -104,11 +104,6 @@ F (x) ∼= Fpoly3(x) = a0 + a1 · x + a2 · x2 + a3 · x3 ;
 ![RigidityAsPositionANDPreload.png](RigidityAsPositionANDPreload.png)
 
 ## 3.10 non-linéarité relative mu pour p min et max
-mu_r=a_3/a_1
-
-mu_r = 3
-
-(dans le cas p_min et p_max)
 
 ## 3.11 combiner F(x), F_poly3(x) et F_lin(x) sur le meme graph
 

@@ -37,15 +37,6 @@ forceMax = 5.70=17.1 N
 (si possible pré contraindre le pusher pour economiser un ressort + améliorer gamme dynamique)
 
 k table pusher = delta F sur x = 0.6N/0.001 m=600 N/m
-table vrai = 750 N/m
-preload of 0.022 m -> 22mm ... ()
-
-forceMin = 5.5*3=11.1 N
-forceMax = 5.70=17.1 N
-donc avec 6000 N/m de vrai table il nous faut une précontrainte de 1.85mm
-c'est acceptable
-
-(vérifier que les lame supporte une déformation de 3mm)
 
 ## 3.2 réglage du zéro
 meme actionneur utilisé pour les deux fonction :
@@ -85,30 +76,21 @@ Energie de chaque systeme + total pour le réglage de force max et min sur toute
 (échelle en unité SI, Joule par metre (avec une précharge N pour chaque courbe))
 attention. la force de précontrainte est calculer est calculer par lame.
 pour avoir la valeurs total il faut multiplier par le nombre de lame qui transmettent la force
-et la au point de rigidité minimum avec un graph pour chaque élément
 
-graph de l'energie dans chaque lammes en fonction de la position
-![computeEnergyk_minPart.png](computeEnergyk_minPart.png)
 
 ## 3.7 dérivé energie = Force en fonction de X
-![ForceAsPositionANDPreload.png](ForceAsPositionANDPreload.png)
+![RigidityAsPreload.png](RigidityAsPreload.png)
 (échelle en unité SI, N/m par N)
 attention. la force de précontrainte est calculer est calculer par lame.
 pour avoir la valeurs total il faut multiplier par le nombre de lame qui transmettent la force
 ## 3.8  polynome Force en fonction de x degrée 2 (a0 a1 a2)
 
 F (x) ∼= Fpoly3(x) = a0 + a1 · x + a2 · x2 + a3 · x3 ;
-![ForceAsPositionANDPreloadPolynomial.png](ForceAsPositionANDPreloadPolynomial.png)
+![RigidityAsPreloadPolynomial.png](RigidityAsPreloadPolynomial.png)
 
 ## 3.9 k_eq min et k_eq max (dérivé encore)
-![RigidityAsPositionANDPreload.png](RigidityAsPositionANDPreload.png)
 
 ## 3.10 non-linéarité relative mu pour p min et max
-mu_r=a_3/a_1
-
-mu_r = 3
-
-(dans le cas p_min et p_max)
 
 ## 3.11 combiner F(x), F_poly3(x) et F_lin(x) sur le meme graph
 
