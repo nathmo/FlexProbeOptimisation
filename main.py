@@ -22,6 +22,7 @@ import openpyxl
 import logging
 from pint import UnitRegistry
 import shutil
+from statistics import mean
 
 forceMin = 0
 forceMax = 0
@@ -128,11 +129,15 @@ def computeForceAsPositionANDPreloadTaylor(mechanism, path):
         yE = []
         for j in range(0, len(x)):
             Etot = 0
+            parameter = [0, 0, 0]
             for part in mechanism:
-                Etot = Etot + mp.diff(lambda x: part.energyStored(x, f[i], 0), x[j])
-            yE.append(Etot.real)
+                p = mp.taylor(lambda x: part.energyStored(x, f[i], 0), 0.1, 3)
+                parameter[0] = parameter[0] + p[0]
+                parameter[1] = parameter[1] + p[1]
+                parameter[2] = parameter[2] + p[2]
+            yE.append(mp.polyval(parameter[::-1], x[i]).real)
         # plot the function
-        plt.plot(x, yE, 'g')
+        plt.plot(x, yE, 'r')
     plt.savefig('ForceAsPositionANDPreloadPolynomial.png')
     plt.savefig(os.path.join(path, 'ForceAsPositionANDPreloadPolynomial.png'))
 
@@ -156,15 +161,84 @@ def computeRigidityAsPositionANDPreload(mechanism, path):
     plt.savefig(os.path.join(path, 'RigidityAsPositionANDPreload.png'))
 
 def computeMu(mechanism, newpath):
-    # Read in the file
+    mu_r = 0
     filedata = ""
-    dataout = ""
     with open('report.md') as f:
         for line in (f):
-            filedata = filedata + line.replace('mu_r', 'mu_r = '+str(3))
+            if "mu_r=" in line:
+                filedata = filedata + "mu_r="+str(mu_r)
+            else:
+                filedata = filedata + line
     # Write the file out again
     with open('report.md', 'wt') as file:
         file.write(filedata)
+
+def computeRigidityMinMax(mechanism, path):
+    # find the lowest resolution achievable
+    """
+    f = np.linspace(forceMin, forceMax, 4500)  # force Preload
+    x = np.linspace(rangeMin, rangeMax, 10)  # position
+    k_eq = []
+    for i in range(0, len(f)):
+        if((i%225)==0):
+            print(str(100*i/4500)+" %")
+        yE = []
+        for j in range(0, len(x)):
+            Etot = 0
+            for part in mechanism:
+                Etot = Etot + mp.diff(lambda x: part.energyStored(x, f[i], 0), x[j], 2)
+            yE.append(float(Etot.real))
+        k_eq.append(mean(yE))
+
+    ForceForlowestK = 0.0111111
+
+
+
+    Etot = 0
+    for part in mechanism:
+        Etot = Etot + mp.diff(lambda x: part.energyStored(x, ForceForlowestK, 0), 0, 2)
+    print(ForceForlowestK)
+    print(Etot)
+    Etot = 0
+    for part in mechanism:
+        Etot = Etot + mp.diff(lambda x: part.energyStored(x, ForceForlowestK, rangeMax), x[j], 2)
+    print(Etot)
+    """
+    ForceForBiggestK = forceMin
+    Pmin = 0.0111111*0.00001 # by 10 micron = résolton
+
+
+    Pmax = 0.0111111*0.00001 # by 10 micron = résolton
+
+    Etot = 0
+    for part in mechanism:
+        Etot = Etot + mp.diff(lambda x: part.energyStored(x, ForceForBiggestK, 0), 0, 2)
+    Fmaxpmin = Etot*0.00001 # by 10 micron
+
+    Etot = 0
+    for part in mechanism:
+        Etot = Etot + mp.diff(lambda x: part.energyStored(x, ForceForBiggestK, rangeMax), rangeMax, 2)
+    Fmaxpmax = Etot*0.0005 # by 500 micron
+
+    filedata = ""
+    with open('report.md') as f:
+        for line in (f):
+            if "Pmin=" in line:
+                filedata = filedata + "Pmin="+str(Pmin)+"\n"
+            elif "Pmax=" in line:
+                filedata = filedata + "Pmax="+str(Pmax)+"\n"
+            elif "Fmax_p_min=" in line:
+                filedata = filedata + "Fmax_p_min="+str(Fmaxpmin)+"\n"
+            elif "Fmax_p_max=" in line:
+                filedata = filedata + "Fmax_p_max="+str(Fmaxpmax)+"\n"
+            elif "DFv=" in line:
+                filedata = filedata + "DFv="+str(Fmaxpmax/Pmin)+"\n"
+            else:
+                filedata = filedata + line
+    # Write the file out again
+    with open('report.md', 'wt') as file:
+        file.write(filedata)
+
 
 def main():
     # set the precision
@@ -265,6 +339,11 @@ def main():
     # 10) compute non linéarity
     print("compute non linearity")
     computeMu(mechanism, newpath)
+
+
+    # 12+13) Force à Pmax et Pmin
+    print("résolution à Pmax et Pmin")
+    computeRigidityMinMax(mechanism, newpath)
 
     # Final, saving result in template
     print("saving result to report")

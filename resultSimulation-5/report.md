@@ -140,24 +140,28 @@ F (x) ∼= Fpoly3(x) = a0 + a1 · x + a2 · x2 + a3 · x3 ;
 ![ForceAsPositionANDPreloadPolynomial.png](ForceAsPositionANDPreloadPolynomial.png)
 
 ## 3.9 k_eq min et k_eq max (dérivé encore)
-Determiner la plage de réglage de rigidité de votre mécanisme keq,min 6 keq 6 keq,max correspon-
-dants aux réglages pmax , respectivement pmin (note : vérifier bien que keq,min > 0) 
 ![RigidityAsPositionANDPreload.png](RigidityAsPositionANDPreload.png)
 
 ## 3.10 non-linéarité relative mu pour p min et max
-mu_r=0## 3.12 Rp résolution a pmin et p_max
+mu_r=0mu_r
+
+(dans le cas p_min et p_max)
+
+## 3.11 combiner F(x), F_poly3(x) et F_lin(x) sur le meme graph
+
+## 3.12 Rp résolution a pmin et p_max
 RF(keq,min) : résolution du capteur de force avec son réglage le moins rigide
 
-Pmin=1.1111100000000001e-07
+Pmin=0.000191515268136339
 
-Pmax=1.1111100000000001e-07
+Pmax=0.0005071878651256552
 
 ## 3.13 Force Max mesurable à p_min et p_max
 avec Fmax ∼= keq · smax
 
-Fmax_p_min=0.00049554373962348200942
+Fmax_p_min=1.1490916088180338e-07
 
-Fmax_p_max=0.026489975952524102844
+Fmax_p_max=3.043127190753931e-07
 
 ## 3.14 gamme dynamique virtuelle (nombre de point ) de la Force mesurable
 (Force MAX / Force min)
@@ -168,7 +172,7 @@ DFv : gamme dynamique virtuelle du capteur de force : DFv = Fmax(keq,max)/RF(keq
 attention. la force de précontrainte est calculer est calculer par lame.
 pour avoir la valeurs total il faut multiplier par le nombre de lame qui transmettent la force
 
-DFv=238410.02198273889099
+DFv=0.0015889736731525448
 
 # 3) Fpoly3(x) [N] : Caractéristique force-déformation approximée par un polynôme de degrés trois :
 
