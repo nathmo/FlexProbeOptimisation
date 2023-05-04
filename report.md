@@ -170,28 +170,6 @@ pour avoir la valeurs total il faut multiplier par le nombre de lame qui transme
 
 DFv=238410.02198273889099
 
-# 3) Fpoly3(x) [N] : Caractéristique force-déformation approximée par un polynôme de degrés trois :
-
-# 4) μ_r : Non-linéarité relative : μr = a3/a1
-
-# 5) k [N/m] : Rigidité à l’entrée du capteur de force : k = a1 ∼= F/x
-
-# 6) F_lin(x) [N] : Caractéristique force-déformation linéarisée : F (x) ∼= Flin(x) = k · x
-
-# 7) s(x) [m] : Déplacement de la cible du capteur de position induit par le déplacement x
-
-# 8) keq [N/m] : Rigidité équivalente du corps d’épreuve : keq ∼= F/s = k · x/s = k · i. Remarque : une
-fois keq connue, la force appliquée est déterminée via la relation F ∼= keq · s
-
-# 9) S [m/N] : Sensibilité du capteur de force : S = 1/keq
-
-# 10) RF [N] : Résolution du capteur de force : RF = keq · Rs = k1 · i · Rs
-
-# 11) Fmax [N] : Etendue de la plage de mesure du capteur de force : Fmax 50mN
-
-
-# 12) DF : Gamme dynamique du capteur de force : DF = Fmax/RF
-
 # 5 Construction
 
 ## 5.1) choix de construction
