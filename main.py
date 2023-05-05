@@ -173,71 +173,43 @@ def computeMu(mechanism, newpath):
     with open('report.md', 'wt') as file:
         file.write(filedata)
 
-def computeRigidityMinMax(mechanism, path):
-    # find the lowest resolution achievable
-    """
-    f = np.linspace(forceMin, forceMax, 4500)  # force Preload
-    x = np.linspace(rangeMin, rangeMax, 10)  # position
-    k_eq = []
+def computeRigidityAsPositionANDPreload12(mechanism, path):
+    # setting the axes at the centre
+    fig = plt.figure()
+    ax = fig.add_subplot(1, 1, 1)
+    #close up of the 0 rigidity region
+    f = np.linspace(2.63-24*0.0008766/3, 2.63-20*0.0008766/3, 4)  # force Preload
+    x = np.linspace(rangeMin, rangeMax, 100)  # position
     for i in range(0, len(f)):
-        if((i%225)==0):
-            print(str(100*i/4500)+" %")
         yE = []
         for j in range(0, len(x)):
             Etot = 0
             for part in mechanism:
-                Etot = Etot + mp.diff(lambda x: part.energyStored(x, f[i], 0), x[j], 2)
-            yE.append(float(Etot.real))
-        k_eq.append(mean(yE))
+                Etot = Etot + mp.diff(lambda x: part.energyStored(x, f[i], 0), x[j],2)
+            yE.append(Etot.real)
+        # plot the function
+        plt.grid()
+        plt.plot(x, yE, 'r')
+    plt.savefig('RigidityAsPositionANDPreload12.png')
 
-    ForceForlowestK = 0.0111111
-
-
-
-    Etot = 0
-    for part in mechanism:
-        Etot = Etot + mp.diff(lambda x: part.energyStored(x, ForceForlowestK, 0), 0, 2)
-    print(ForceForlowestK)
-    print(Etot)
-    Etot = 0
-    for part in mechanism:
-        Etot = Etot + mp.diff(lambda x: part.energyStored(x, ForceForlowestK, rangeMax), x[j], 2)
-    print(Etot)
-    """
-    ForceForBiggestK = forceMin
-    Pmin = 0.0111111*0.00001 # by 10 micron = résolton
-
-
-    Pmax = 0.0111111*0.00001 # by 10 micron = résolton
-
-    Etot = 0
-    for part in mechanism:
-        Etot = Etot + mp.diff(lambda x: part.energyStored(x, ForceForBiggestK, 0), 0, 2)
-    Fmaxpmin = Etot*0.00001 # by 10 micron
-
-    Etot = 0
-    for part in mechanism:
-        Etot = Etot + mp.diff(lambda x: part.energyStored(x, ForceForBiggestK, rangeMax), rangeMax, 2)
-    Fmaxpmax = Etot*0.0005 # by 500 micron
-
-    filedata = ""
-    with open('report.md') as f:
-        for line in (f):
-            if "Pmin=" in line:
-                filedata = filedata + "Pmin="+str(Pmin)+"\n"
-            elif "Pmax=" in line:
-                filedata = filedata + "Pmax="+str(Pmax)+"\n"
-            elif "Fmax_p_min=" in line:
-                filedata = filedata + "Fmax_p_min="+str(Fmaxpmin)+"\n"
-            elif "Fmax_p_max=" in line:
-                filedata = filedata + "Fmax_p_max="+str(Fmaxpmax)+"\n"
-            elif "DFv=" in line:
-                filedata = filedata + "DFv="+str(Fmaxpmax/Pmin)+"\n"
-            else:
-                filedata = filedata + line
-    # Write the file out again
-    with open('report.md', 'wt') as file:
-        file.write(filedata)
+def computeRigidityAsPositionANDPreload13(mechanism, path):
+    # setting the axes at the centre
+    fig = plt.figure()
+    ax = fig.add_subplot(1, 1, 1)
+    #close up of the max rigidity the axis can have ( preload at 1mm)
+    f = np.linspace(2.63/2, 2.63/2+0.0008766/3, 2)  # force Preload
+    x = np.linspace(rangeMin, rangeMax, 100)  # position
+    for i in range(0, len(f)):
+        yE = []
+        for j in range(0, len(x)):
+            Etot = 0
+            for part in mechanism:
+                Etot = Etot + mp.diff(lambda x: part.energyStored(x, f[i], 0), x[j],2)
+            yE.append(Etot.real)
+        # plot the function
+        plt.grid()
+        plt.plot(x, yE, 'r')
+    plt.savefig('RigidityAsPositionANDPreload13.png')
 
 
 def main():
@@ -316,7 +288,6 @@ def main():
     print("created new folder with result :" + newpath)
     print("---------------------------------------------------------")
     # generate the graphs and save them to a new folder + update the one here
-
     # 1) rigidité de la table de réglage du zéro en fonction du moteur de réglage du zéro.
     print("compute Zéro offset table Rigidity")
     computeRigidityTableZero(mechanismZero, newpath)
@@ -339,15 +310,16 @@ def main():
     # 10) compute non linéarity
     print("compute non linearity")
     computeMu(mechanism, newpath)
-
-
     # 12+13) Force à Pmax et Pmin
     print("résolution à Pmax et Pmin")
-    computeRigidityMinMax(mechanism, newpath)
+    computeRigidityAsPositionANDPreload12(mechanism, newpath)
+    computeRigidityAsPositionANDPreload13(mechanism, newpath)
 
     # Final, saving result in template
     print("saving result to report")
     shutil.copyfile("report.md", os.path.join(newpath, "report.md"))
+
+
 if __name__ == "__main__":
     main()
     print("done")

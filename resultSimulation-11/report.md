@@ -66,7 +66,8 @@ pour la borne minimal on veux une résolution 500 nN
 mais la résoltion du cateur est de 10 micron
 ce qui nous donne une rigidité à 0.05 N/m ou mieux (0 N/m)
 ![img_4.png](img_4.png)
- (rigidité (N/m) en fonction de la position)
+![RigidityAsPositionANDPreload.png](RigidityAsPositionANDPreload.png)
+
 on peut voir que les parametre qui rentre bien dans le range sont :
 2.53 N au minimum
 2.63 N au maximum
@@ -95,7 +96,7 @@ peut prendre (4500) répartis sur la plage d'un 1mm ce qui nous donne
 de plus on vois qu'on est largement en dessous de la force maximal que 
 peut tollérer l'actionneur linéaire.
 
-
+(vérifier que les lame supporte une déformation de 3mm (demander TRISTAN))
 
 on voit sur le graphique que la table a lame à bien la rigidité de 3945 N/m
 attendu.
@@ -106,7 +107,6 @@ attendu.
 (légerement plus sur la roue est nécéssaire mais simplifier à 1 mm)
 
 ## 3.4 contrainte max flamage + casse chaque lame
-(vérifier que les lame supporte une déformation de 2-3mm (demander TRISTAN))
 
 ## 3.5 Couple moteur
 Nominal torque (max. continuous torque) = 3.33 mNm
@@ -145,34 +145,19 @@ dants aux réglages pmax , respectivement pmin (note : vérifier bien que keq,mi
 ![RigidityAsPositionANDPreload.png](RigidityAsPositionANDPreload.png)
 
 ## 3.10 non-linéarité relative mu pour p min et max
-mu_r=0
-
-https://en.wikipedia.org/wiki/Relative_nonlinearity
-
-## 3.11
-racer sur un même graphique les fonctions F (x), Fpoly3(x) et Flin(x) afin de visualiser la non-
-linéarité pour pmin et pmax ;
-
-## 3.12 Rp résolution a pmin et p_max
+mu_r=0## 3.12 Rp résolution a pmin et p_max
 RF(keq,min) : résolution du capteur de force avec son réglage le moins rigide
 
-![RigidityAsPositionANDPreload12.png](RigidityAsPositionANDPreload12.png)
+Pmin=1.1111100000000001e-07
 
-RigidityPmin=0.2 N/m
-
-RigidityFPmax=2.5N/m
-
-RFminpmin = 2 nF
-RFminpmax = 25 nF
+Pmax=1.1111100000000001e-07
 
 ## 3.13 Force Max mesurable à p_min et p_max
 avec Fmax ∼= keq · smax
-![RigidityAsPositionANDPreload13.png](RigidityAsPositionANDPreload13.png)
 
-Fmax_p_min=0.000006810 N (6.8 uN)
+Fmax_p_min=0.00049554373962348200942
 
-Fmax_p_max=0.3405 N
-
+Fmax_p_max=0.026489975952524102844
 
 ## 3.14 gamme dynamique virtuelle (nombre de point ) de la Force mesurable
 (Force MAX / Force min)
@@ -183,7 +168,29 @@ DFv : gamme dynamique virtuelle du capteur de force : DFv = Fmax(keq,max)/RF(keq
 attention. la force de précontrainte est calculer est calculer par lame.
 pour avoir la valeurs total il faut multiplier par le nombre de lame qui transmettent la force
 
-DFv=0.3405 N/2 nF=170'250'000
+DFv=238410.02198273889099
+
+# 3) Fpoly3(x) [N] : Caractéristique force-déformation approximée par un polynôme de degrés trois :
+
+# 4) μ_r : Non-linéarité relative : μr = a3/a1
+
+# 5) k [N/m] : Rigidité à l’entrée du capteur de force : k = a1 ∼= F/x
+
+# 6) F_lin(x) [N] : Caractéristique force-déformation linéarisée : F (x) ∼= Flin(x) = k · x
+
+# 7) s(x) [m] : Déplacement de la cible du capteur de position induit par le déplacement x
+
+# 8) keq [N/m] : Rigidité équivalente du corps d’épreuve : keq ∼= F/s = k · x/s = k · i. Remarque : une
+fois keq connue, la force appliquée est déterminée via la relation F ∼= keq · s
+
+# 9) S [m/N] : Sensibilité du capteur de force : S = 1/keq
+
+# 10) RF [N] : Résolution du capteur de force : RF = keq · Rs = k1 · i · Rs
+
+# 11) Fmax [N] : Etendue de la plage de mesure du capteur de force : Fmax 50mN
+
+
+# 12) DF : Gamme dynamique du capteur de force : DF = Fmax/RF
 
 # 5 Construction
 
