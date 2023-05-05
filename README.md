@@ -1,23 +1,8 @@
 # FlexProbeOptimisation
-![img_2.png](img_2.png)
-find the right geometrical parameters for each blade and necked joint
-so that the total ridity can be as close to zero as possible.
+this repo contain code to compute and properties
+of an adjustable stiffness force sensor and optimise
+it's parameter to get the best resolution possible
 
-2 pivot RCC angulaire
-1 table à lame
-2 pivot à col
-1 lame rigidité négative
+![img_5.png](img_5.png)
 
-# Pivot RCC
-![img.png](img.png)
-
-# pivot à col
-![img_1.png](img_1.png)
-
-
-# table a lame
-![img_4.png](img_4.png)
-
-
-# rigidité negative
-![img_3.png](img_3.png)
+after running the code, report.md is updated with the result
