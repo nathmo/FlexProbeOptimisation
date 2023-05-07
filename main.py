@@ -178,7 +178,7 @@ def computeRigidityAsPositionANDPreload12(mechanism, path):
     fig = plt.figure()
     ax = fig.add_subplot(1, 1, 1)
     #close up of the 0 rigidity region
-    f = np.linspace(2.63-89*0.0008766/3, 2.63-85*0.0008766/3, 4)  # force Preload
+    f = np.linspace(2.63-104*0.0008766/3, 2.63-100*0.0008766/3, 4)  # force Preload
     x = np.linspace(rangeMin, rangeMax, 100)  # position
     for i in range(0, len(f)):
         yE = []

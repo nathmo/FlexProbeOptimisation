@@ -151,17 +151,28 @@ dants aux réglages pmax , respectivement pmin (note : vérifier bien que keq,mi
 ![RigidityAsPositionANDPreload.png](RigidityAsPositionANDPreload.png)
 
 ## 3.10 non-linéarité relative mu pour p min et max
+
 mu_r=0
 
-## 3.12 résolution
-![RigidityAsPositionANDPreload12.png](RigidityAsPositionANDPreload12.png)
 
+
+
+
+## 3.12 résolution
+
+![RigidityAsPositionANDPreload12.png](RigidityAsPositionANDPreload12.png)
+( chaque ligne montre un réglage de résolution)
+ce graphe montre la résolution a 4 point conséqutif de réglable de la précontrainte)
+dans le pire des cas on as une rigidité :
 RigidityPmin=0.2 N/m
 
 RigidityFPmax=2.5N/m
 
 RFminpmin = 2 nF
 RFminpmax = 25 nF
+
+
+mais dans le meilleures des cas elle peut etre encore meilleure
 
 ## 3.13 Force Max mesurable à p_min et p_max
 avec Fmax ∼= keq · smax
