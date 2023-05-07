@@ -178,7 +178,7 @@ def computeRigidityAsPositionANDPreload12(mechanism, path):
     fig = plt.figure()
     ax = fig.add_subplot(1, 1, 1)
     #close up of the 0 rigidity region
-    f = np.linspace(2.63-24*0.0008766/3, 2.63-20*0.0008766/3, 4)  # force Preload
+    f = np.linspace(2.63-89*0.0008766/3, 2.63-85*0.0008766/3, 4)  # force Preload
     x = np.linspace(rangeMin, rangeMax, 100)  # position
     for i in range(0, len(f)):
         yE = []
@@ -261,10 +261,12 @@ def main():
     negativeBladePusher = NegativeRigidityBlade(b_converter, parameters["bladeLengthTablePushing"], parameters["bladeThicknessTablePushing"], E, f_x) #250 N/m
     negativeBlade = NegativeRigidityBlade(b_converter, parameters["bladeLengthTable"], parameters["bladeThicknessTable"], E, f_x)  # 250 N/m
     ForceConverter = SpringBlade(b_converter, parameters["bladeLengthForceConverter"], parameters["bladeThicknessForceConverter"], E, f_x)  # 250 N/m
-    ZeroConverter = SpringBlade(b_wheel, parameters["bladeLengthZeroConverter"], parameters["bladeThicknessZeroConverter"], E, f_Xby8)  # 2000 N/m
-    mechanismZero = [ZeroConverter, ZeroConverter]  # reglage zero
+    ZeroConverter = SpringBlade(b_wheel, parameters["bladeLengthZeroConverter"], parameters["bladeThicknessZeroConverter"], E, f_Xby8)  # 16 N/m
+    ZeroConverterActuatorSide = SpringBlade(b_wheel, parameters["bladeLengthZeroConverter"], parameters["bladeThicknessZeroConverter"], E, f_x)  # 16 N/m
+    mechanismZero = [ZeroConverterActuatorSide, ZeroConverterActuatorSide]  # reglage zero
     mechanismKeqForce = [ForceConverter, ForceConverter] # k_eq
     mechanism = [pivotRCC, pivotRCC, wheelAnchor, wheelAnchor, negativeBladePusher, negativeBladePusher, negativeBladePusher, negativeBlade, negativeBlade , negativeBlade, ZeroConverter, ZeroConverter]
+
     print("mechanism definition :")
     for part in mechanism:
         print("")

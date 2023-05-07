@@ -45,10 +45,16 @@ nous avons utiliser la roue pour diminué la course rensentie par la table
 donc pas +-1mN mais +-8mN
 rigidité des lames : (2 lames*ratio transformation de 8 -> 16 N/m par lame)
 
-nous avons donc tuner les parametre de notre table pour obtenir la rigidité total de 16 N/m:
-avec une table à 2 lamme de de 11.98 mm de long, 8mm de largeur et 100 um d'épaisseur
+nous avons donc essayer de tuner les parametre de notre table pour obtenir la rigidité total de 16 N/m:
+avec une table à 2 lamme  mais la longeur devenais trop grande.
 
+Nous avons donc du faire une table avec la plus grande 
+hauteur possible : 20 mm de long, 8mm de largeur et 100 um d'épaisseur
+nous avons obtenu 220 N/m.
 ![computeRigidityTableZero.png](computeRigidityTableZero.png)
+
+soit une plage de réglage de entre -110mN et 110mN
+avec une résolution de 0.04888 mN
 
 ## 3.2 rigidité 
 meme actionneur utilisé pour les deux fonction :
@@ -147,15 +153,7 @@ dants aux réglages pmax , respectivement pmin (note : vérifier bien que keq,mi
 ## 3.10 non-linéarité relative mu pour p min et max
 mu_r=0
 
-https://en.wikipedia.org/wiki/Relative_nonlinearity
-
-## 3.11
-racer sur un même graphique les fonctions F (x), Fpoly3(x) et Flin(x) afin de visualiser la non-
-linéarité pour pmin et pmax ;
-
-## 3.12 Rp résolution a pmin et p_max
-RF(keq,min) : résolution du capteur de force avec son réglage le moins rigide
-
+## 3.12 résolution
 ![RigidityAsPositionANDPreload12.png](RigidityAsPositionANDPreload12.png)
 
 RigidityPmin=0.2 N/m
