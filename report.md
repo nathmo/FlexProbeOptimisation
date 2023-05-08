@@ -157,7 +157,6 @@ mu_r=0
 
 
 
-
 ## 3.12 résolution
 
 ![RigidityAsPositionANDPreload12.png](RigidityAsPositionANDPreload12.png)

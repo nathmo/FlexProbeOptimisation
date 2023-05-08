@@ -87,7 +87,7 @@ def computeEnergyk_minPart(mechanism, path):
     fig = plt.figure()
     ax = fig.add_subplot(1, 1, 1)
 
-    f = 5.67  # force Preload (force such that minimum k_eq)
+    f = forceMax  # force Preload (force such that minimum k_eq)
     x = np.linspace(rangeMin, rangeMax, 100)  # position
     for part in mechanism:
         y = []
