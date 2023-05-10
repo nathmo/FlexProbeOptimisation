@@ -236,7 +236,7 @@ def computeForceAsPositionANDPreloadNumTaylorLin(mechanism, path):
             Etot = Etot + mp.diff(lambda x: part.energyStored(x, f[1], 0), x[j])
         yEnum.append(Etot.real)
     for part in mechanism:
-        p = mp.taylor(lambda x: part.energyStored(x, f[1], 0), 0.0000001, 4)
+        p = mp.taylor(lambda x: part.energyStored(x, f[1], 0), 0.000005, 4)
         parameter[0] = parameter[0] + p[1]
         parameter[1] = parameter[1] + 2*p[2]
         parameter[2] = parameter[2] + 3*p[3]
@@ -252,6 +252,9 @@ def computeForceAsPositionANDPreloadNumTaylorLin(mechanism, path):
     plt.savefig('ForceAsPositionANDPreloadNumTaylorLinMin.png')
     plt.savefig(os.path.join(path, 'ForceAsPositionANDPreloadNumTaylorLinMin.png'))
 
+    # setting the axes at the centre
+    fig = plt.figure()
+    ax = fig.add_subplot(1, 1, 1)
     yEnum = []
     yEpol = []
     yElin = []
@@ -263,15 +266,15 @@ def computeForceAsPositionANDPreloadNumTaylorLin(mechanism, path):
             Etot = Etot + mp.diff(lambda x: part.energyStored(x, f[0], 0), x[j])
         yEnum.append(Etot.real)
     for part in mechanism:
-        p = mp.taylor(lambda x: part.energyStored(x, f[0], 0), 0.0000001, 4)
+        p = mp.taylor(lambda x: part.energyStored(x, f[0], 0), 0.00025, 4)
         parameter[0] = parameter[0] + p[1]
         parameter[1] = parameter[1] + 2*p[2]
         parameter[2] = parameter[2] + 3*p[3]
         parameter[3] = parameter[3] + 4*p[4] # dérivation du pauvre
     for j in range(0, len(x)):
-        yEpol.append(mp.polyval(parameter[::-1], x[j]).real)
+        yEpol.append(mp.polyval(parameter[::-1], x[j]-0.00025+0.00001).real)
         lin = parameter[::-1]
-        yElin.append(mp.polyval(lin[2:4], x[j]).real)
+        yElin.append(mp.polyval(lin[2:4], x[j]-0.00025-0.00001).real)
     # plot the function
     plt.plot(x, yEnum, 'r')
     plt.plot(x, yEpol, 'b')

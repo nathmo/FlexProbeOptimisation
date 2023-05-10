@@ -187,7 +187,7 @@ blue = polynomial
 green = linear
 ![ForceAsPositionANDPreloadNumTaylorLinMin.png](ForceAsPositionANDPreloadNumTaylorLinMin.png)
 
-(nous avons ajouter un leger offset pour voir que les lignes sont bien superposé)
+
 
 ![ForceAsPositionANDPreloadNumTaylorLinMax.png](ForceAsPositionANDPreloadNumTaylorLinMax.png)
 
