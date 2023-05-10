@@ -127,17 +127,18 @@ def computeForceAsPositionANDPreloadTaylor(mechanism, path):
     x = np.linspace(rangeMin, rangeMax, 100)  # position
     for i in range(0, len(f)):
         yE = []
+        Etot = 0
+        parameter = [0, 0, 0, 0]
+        for part in mechanism:
+            p = mp.taylor(lambda x: part.energyStored(x, f[i], 0), 0.0000001, 4)
+            parameter[0] = parameter[0] + p[1]
+            parameter[1] = parameter[1] + 2*p[2]
+            parameter[2] = parameter[2] + 3*p[3]
+            parameter[3] = parameter[3] + 4*p[4] # dérivation du pauvre
         for j in range(0, len(x)):
-            Etot = 0
-            parameter = [0, 0, 0]
-            for part in mechanism:
-                p = mp.taylor(lambda x: part.energyStored(x, f[i], 0), 0.1, 3)
-                parameter[0] = parameter[0] + p[0]
-                parameter[1] = parameter[1] + p[1]
-                parameter[2] = parameter[2] + p[2]
-            yE.append(mp.polyval(parameter[::-1], x[i]).real)
+            yE.append(mp.polyval(parameter[::-1], x[j]).real)
         # plot the function
-        plt.plot(x, yE, 'r')
+        plt.plot(x, yE, 'b')
     plt.savefig('ForceAsPositionANDPreloadPolynomial.png')
     plt.savefig(os.path.join(path, 'ForceAsPositionANDPreloadPolynomial.png'))
 
@@ -161,17 +162,95 @@ def computeRigidityAsPositionANDPreload(mechanism, path):
     plt.savefig(os.path.join(path, 'RigidityAsPositionANDPreload.png'))
 
 def computeMu(mechanism, newpath):
-    mu_r = 0
+    # setting the axes at the centre
+    fig = plt.figure()
+    ax = fig.add_subplot(1, 1, 1)
+    x = np.linspace(rangeMin, rangeMax, 100)  # position
+    parameter = [0, 0, 0, 0]
+    for part in mechanism:
+        p = mp.taylor(lambda x: part.energyStored(x, 2.63-104*0.0008766/3, 0), 0.0000001, 4)
+        parameter[0] = parameter[0] + p[1]
+        parameter[1] = parameter[1] + 2*p[2]
+        parameter[2] = parameter[2] + 3*p[3]
+        parameter[3] = parameter[3] + 4*p[4] # dérivation du pauvre
+    yE = []
+    for j in range(0, len(x)):
+        yE.append(mp.polyval(parameter[::-1], x[j]).real)
+    plt.plot(x, yE, 'r')
+    plt.savefig('ForceAsPositionANDPreloadPolynomialMurmin.png')
+    plt.savefig(os.path.join(newpath, 'ForceAsPositionANDPreloadPolynomialMurmin.png'))
+
+    mu_rmin = parameter[3]/parameter[1]
+    print("parameters polynomial min")
+    print(parameter)
+    # setting the axes at the centre
+    fig = plt.figure()
+    ax = fig.add_subplot(1, 1, 1)
+    x = np.linspace(rangeMin, rangeMax, 100)  # position
+    parameter = [0, 0, 0, 0]
+    for part in mechanism:
+        p = mp.taylor(lambda x: part.energyStored(x, 2.63/2, 0), 0.0000001, 4)
+        parameter[0] = parameter[0] + p[1]
+        parameter[1] = parameter[1] + 2*p[2]
+        parameter[2] = parameter[2] + 3*p[3]
+        parameter[3] = parameter[3] + 4*p[4] # dérivation du pauvre
+    yE = []
+    for j in range(0, len(x)):
+        yE.append(mp.polyval(parameter[::-1], x[j]).real)
+    plt.plot(x, yE, 'r')
+    plt.savefig('ForceAsPositionANDPreloadPolynomialMurmax.png')
+    plt.savefig(os.path.join(newpath, 'ForceAsPositionANDPreloadPolynomialMurmax.png'))
+
+    mu_rmax = parameter[3]/parameter[1]
+    print("parameters polynomial max")
+    print(parameter)
     filedata = ""
     with open('report.md') as f:
         for line in (f):
-            if "mu_r=" in line:
-                filedata = filedata + "mu_r="+str(mu_r)
+            if "mu_r_pmin=" in line:
+                filedata = filedata + "mu_r_pmin="+str(mu_rmin)+"\n"
+            elif "mu_r_pmax=" in line:
+                filedata = filedata + "mu_r_pmax=" + str(mu_rmax)+"\n"
             else:
                 filedata = filedata + line
     # Write the file out again
     with open('report.md', 'wt') as file:
         file.write(filedata)
+
+def computeForceAsPositionANDPreloadNumTaylorLin(mechanism, path):
+    # setting the axes at the centre
+    fig = plt.figure()
+    ax = fig.add_subplot(1, 1, 1)
+
+    f = np.linspace(forceMin, forceMax, 5)  # force Preload
+    x = np.linspace(rangeMin, rangeMax, 100)  # position
+
+    for i in range(0, len(f)):
+        yEnum = []
+        yEpol = []
+        yElin = []
+        Etot = 0
+        parameter = [0, 0, 0, 0]
+        for j in range(0, len(x)):
+            Etot = 0
+            for part in mechanism:
+                Etot = Etot + mp.diff(lambda x: part.energyStored(x, f[i], 0), x[j])
+            yEnum.append(Etot.real)
+        for part in mechanism:
+            p = mp.taylor(lambda x: part.energyStored(x, f[i], 0), 0.0000001, 4)
+            parameter[0] = parameter[0] + p[1]
+            parameter[1] = parameter[1] + 2*p[2]
+            parameter[2] = parameter[2] + 3*p[3]
+            parameter[3] = parameter[3] + 4*p[4] # dérivation du pauvre
+        for j in range(0, len(x)):
+            yEpol.append(mp.polyval(parameter[::-1], x[j]).real)
+            yElin.append(mp.polyval(parameter[0:1:-1], x[j]).real)
+        # plot the function
+        plt.plot(x, yEnum, 'r')
+        plt.plot(x, yEpol, 'b')
+        plt.plot(x, yElin, 'g')
+    plt.savefig('ForceAsPositionANDPreloadNumTaylorLin.png')
+    plt.savefig(os.path.join(path, 'ForceAsPositionANDPreloadNumTaylorLin.png'))
 
 def computeRigidityAsPositionANDPreload12(mechanism, path):
     # setting the axes at the centre
@@ -312,6 +391,9 @@ def main():
     # 10) compute non linéarity
     print("compute non linearity")
     computeMu(mechanism, newpath)
+    # 11) grpah num + pol + lin
+    print("grpah num + pol + lin")
+    computeForceAsPositionANDPreloadNumTaylorLin(mechanism, newpath)
     # 12+13) Force à Pmax et Pmin
     print("résolution à Pmax et Pmin")
     computeRigidityAsPositionANDPreload12(mechanism, newpath)

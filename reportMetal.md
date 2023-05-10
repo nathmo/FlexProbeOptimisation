@@ -1,11 +1,8 @@
 # Paramètre utiliser pour le calcul des résultat
-![img_7.png](img_7.png)
 
-modele de demonstration.
-goal = plage du poid d'une plume (10 uN)
-MDF 5mm
-
-
+![img_1.png](img_1.png)
+![img_2.png](img_2.png)
+![img_3.png](img_3.png)
 # 2 Principe de fonctionnement
 
 ## 2.6)
@@ -154,23 +151,9 @@ dants aux réglages pmax , respectivement pmin (note : vérifier bien que keq,mi
 
 ## 3.10 non-linéarité relative mu pour p min et max
 
-![ForceAsPositionANDPreloadPolynomialMurmin.png](ForceAsPositionANDPreloadPolynomialMurmin.png)
+mu_r=0
 
-p_min :
 
-mu_r_pmin=7931363.3607044481861
-
-![ForceAsPositionANDPreloadPolynomialMurmax.png](ForceAsPositionANDPreloadPolynomialMurmax.png)
-
-p_max :
-
-mu_r_pmax=4757.845746219724417
-
-## 3.11 graph de poly + num
-
-Tracer sur un même graphique les fonctions F (x), Fpoly3(x) et Flin(x) 
-
-![ForceAsPositionANDPreloadNumTaylorLin.png](ForceAsPositionANDPreloadNumTaylorLin.png)
 
 
 ## 3.12 résolution
