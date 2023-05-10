@@ -185,6 +185,7 @@ Tracer sur un même graphique les fonctions F (x), Fpoly3(x) et Flin(x)
 red = numerical
 blue = polynomial
 green = linear
+
 ![ForceAsPositionANDPreloadNumTaylorLinMin.png](ForceAsPositionANDPreloadNumTaylorLinMin.png)
 
 (nous avons ajouter un leger offset pour voir que les lignes sont bien superposé)
