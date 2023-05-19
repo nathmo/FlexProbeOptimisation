@@ -3,7 +3,7 @@
 
 modele de demonstration.
 goal = plage du poid d'une plume (10 uN)
-MDF 5mm
+MDF 6mm
 
 
 # 2 Principe de fonctionnement
@@ -60,6 +60,13 @@ soit une plage de réglage de entre -110mN et 110mN
 avec une résolution de 0.04888 mN
 
 ## 3.2 rigidité 
+
+![computeEnergyk_minPart.png](computeEnergyk_minPart.png)
+
+
+![EnergyAsPreloadPosition.png](EnergyAsPreloadPosition.png)
+
+
 meme actionneur utilisé pour les deux fonction :
 q_p = 0.05 mm / tour (vis différentiel : 0.5 mm et 0.45 mm )
 d_p = M2.5 et M3
@@ -170,13 +177,13 @@ dants aux réglages pmax , respectivement pmin (note : vérifier bien que keq,mi
 
 p_min :
 
-mu_r_pmin=7931363.3607044481861
+mu_r_pmin=-113797755.63251112401
 
 ![ForceAsPositionANDPreloadPolynomialMurmax.png](ForceAsPositionANDPreloadPolynomialMurmax.png)
 
 p_max :
 
-mu_r_pmax=4757.845746219724417
+mu_r_pmax=4778.5669276376367747
 
 ## 3.11 graph de poly + num
 

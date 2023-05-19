@@ -1,8 +1,11 @@
 # Paramètre utiliser pour le calcul des résultat
+![img_7.png](img_7.png)
 
-![img_1.png](img_1.png)
-![img_2.png](img_2.png)
-![img_3.png](img_3.png)
+modele de demonstration.
+goal = plage du poid d'une plume (10 uN)
+MDF 6mm
+
+
 # 2 Principe de fonctionnement
 
 ## 2.6)
@@ -50,12 +53,20 @@ avec une table à 2 lamme  mais la longeur devenais trop grande.
 Nous avons donc du faire une table avec la plus grande 
 hauteur possible : 20 mm de long, 8mm de largeur et 100 um d'épaisseur
 nous avons obtenu 220 N/m.
+
 ![computeRigidityTableZero.png](computeRigidityTableZero.png)
 
 soit une plage de réglage de entre -110mN et 110mN
 avec une résolution de 0.04888 mN
 
 ## 3.2 rigidité 
+
+![computeEnergyk_minPart.png](computeEnergyk_minPart.png)
+
+
+![EnergyAsPreloadPosition.png](EnergyAsPreloadPosition.png)
+
+
 meme actionneur utilisé pour les deux fonction :
 q_p = 0.05 mm / tour (vis différentiel : 0.5 mm et 0.45 mm )
 d_p = M2.5 et M3
@@ -70,7 +81,9 @@ on aimerais que nos rigidité sois entre : 50 N/m et
 pour la borne minimal on veux une résolution 500 nN
 mais la résoltion du cateur est de 10 micron
 ce qui nous donne une rigidité à 0.05 N/m ou mieux (0 N/m)
+
 ![img_4.png](img_4.png)
+
  (rigidité (N/m) en fonction de la position)
 on peut voir que les parametre qui rentre bien dans le range sont :
 2.53 N au minimum
@@ -104,7 +117,9 @@ peut tollérer l'actionneur linéaire.
 
 on voit sur le graphique que la table a lame à bien la rigidité de 3945 N/m
 attendu.
+
 ![computeRigidityTableKeq.png](computeRigidityTableKeq.png)
+
 ## 3.3 débattement des articulation
 (formule mouvement relatif)
 0.5 mm sur toute les lames
@@ -124,7 +139,9 @@ donc on se limite à 50 Newton par sécurité
 ( et  on vois par la suite que la force de précontrainte est inférieur dans tout les cas)
 
 ## 3.6 Energie de chaque systeme + total 
+
 ![EnergyAsPreloadPosition.png](EnergyAsPreloadPosition.png)
+
 Energie total pour le réglage de force sur toute la plage de x
 (échelle en unité SI, Joule par metre (avec une précharge N pour chaque courbe))
 attention. la force de précontrainte est calculer est calculer par lame.
@@ -132,33 +149,61 @@ pour avoir la valeurs total il faut multiplier par le nombre de lame qui transme
 et la au point de rigidité minimum avec un graph pour chaque élément
 
 Energie de chaque systeme + 
+
 ![computeEnergyk_minPart.png](computeEnergyk_minPart.png)
 
 ## 3.7 dérivé energie = Force en fonction de X
+
 ![ForceAsPositionANDPreload.png](ForceAsPositionANDPreload.png)
+
 (échelle en unité SI, N/m par N)
 attention. la force de précontrainte est calculer est calculer par lame.
 pour avoir la valeurs total il faut multiplier par le nombre de lame qui transmettent la force
 ## 3.8  polynome Force en fonction de x degrée 2 (a0 a1 a2)
 
 F (x) ∼= Fpoly3(x) = a0 + a1 · x + a2 · x2 + a3 · x3 ;
+
 ![ForceAsPositionANDPreloadPolynomial.png](ForceAsPositionANDPreloadPolynomial.png)
 
 ## 3.9 k_eq min et k_eq max (dérivé encore)
 Determiner la plage de réglage de rigidité de votre mécanisme keq,min 6 keq 6 keq,max correspon-
 dants aux réglages pmax , respectivement pmin (note : vérifier bien que keq,min > 0) 
+
 ![RigidityAsPositionANDPreload.png](RigidityAsPositionANDPreload.png)
 
 ## 3.10 non-linéarité relative mu pour p min et max
 
-mu_r=0
+![ForceAsPositionANDPreloadPolynomialMurmin.png](ForceAsPositionANDPreloadPolynomialMurmin.png)
 
+p_min :
 
+mu_r_pmin=-517.77790613914346658
+
+![ForceAsPositionANDPreloadPolynomialMurmax.png](ForceAsPositionANDPreloadPolynomialMurmax.png)
+
+p_max :
+
+mu_r_pmax=56.831548151915728584
+
+## 3.11 graph de poly + num
+
+Tracer sur un même graphique les fonctions F (x), Fpoly3(x) et Flin(x) 
+
+red = numerical
+blue = polynomial
+green = linear
+
+![ForceAsPositionANDPreloadNumTaylorLinMin.png](ForceAsPositionANDPreloadNumTaylorLinMin.png)
+
+(nous avons ajouter un leger offset pour voir que les lignes sont bien superposé)
+
+![ForceAsPositionANDPreloadNumTaylorLinMax.png](ForceAsPositionANDPreloadNumTaylorLinMax.png)
 
 
 ## 3.12 résolution
 
 ![RigidityAsPositionANDPreload12.png](RigidityAsPositionANDPreload12.png)
+
 ( chaque ligne montre un réglage de résolution)
 ce graphe montre la résolution a 4 point conséqutif de réglable de la précontrainte)
 dans le pire des cas on as une rigidité :
@@ -174,6 +219,7 @@ mais dans le meilleures des cas elle peut etre encore meilleure
 
 ## 3.13 Force Max mesurable à p_min et p_max
 avec Fmax ∼= keq · smax
+
 ![RigidityAsPositionANDPreload13.png](RigidityAsPositionANDPreload13.png)
 
 Fmax_p_min=0.000006810 N (6.8 uN)

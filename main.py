@@ -40,6 +40,7 @@ def computeRigidityTableZero(mechanism, path):
             Etot = Etot + mp.diff(lambda x: part.energyStored(x, 0, 0), x[j],2)
         yE.append(Etot.real)
     # plot the function
+    plt.grid()
     plt.plot(x, yE, 'r')
     plt.savefig('computeRigidityTableZero.png')
     plt.savefig(os.path.join(path, 'computeRigidityTableZero.png'))
@@ -51,6 +52,7 @@ def computeRigidityTableKeq(mechanism, path):
 
     f = np.linspace(forceMin, forceMax, 10)  # force Preload
     x = np.linspace(rangeMin, rangeMax, 100)  # position
+    plt.grid()
     for i in range(0, len(f)):
         yE = []
         for j in range(0, len(x)):
@@ -79,6 +81,7 @@ def computeEnergy(mechanism, path):
         # plot the function
         plt.plot(x, yE, 'b')
     # save the plot
+    plt.grid()
     plt.savefig('EnergyAsPreloadPosition.png')
     plt.savefig(os.path.join(path, 'EnergyAsPreloadPosition.png'))
 
@@ -89,11 +92,13 @@ def computeEnergyk_minPart(mechanism, path):
 
     f = forceMax  # force Preload (force such that minimum k_eq)
     x = np.linspace(rangeMin, rangeMax, 100)  # position
+    plt.grid()
     for part in mechanism:
         y = []
         for j in range(0, len(x)):
             y.append(part.energyStored(x[j], f, 0).real)
         # plot the function
+
         plt.plot(x, y, 'b')
     # save the plot
     plt.savefig('computeEnergyk_minPart.png')
@@ -106,6 +111,7 @@ def computeForceAsPositionANDPreload(mechanism, path):
 
     f = np.linspace(forceMin, forceMax, 20)  # force Preload
     x = np.linspace(rangeMin, rangeMax, 100)  # position
+    plt.grid()
     for i in range(0, len(f)):
         yE = []
         for j in range(0, len(x)):
@@ -125,6 +131,7 @@ def computeForceAsPositionANDPreloadTaylor(mechanism, path):
 
     f = np.linspace(forceMin, forceMax, 20)  # force Preload
     x = np.linspace(rangeMin, rangeMax, 100)  # position
+    plt.grid()
     for i in range(0, len(f)):
         yE = []
         Etot = 0
@@ -149,6 +156,7 @@ def computeRigidityAsPositionANDPreload(mechanism, path):
 
     f = np.linspace(forceMin, forceMax, 10)  # force Preload
     x = np.linspace(rangeMin, rangeMax, 100)  # position
+    plt.grid()
     for i in range(0, len(f)):
         yE = []
         for j in range(0, len(x)):
@@ -168,7 +176,7 @@ def computeMu(mechanism, newpath):
     x = np.linspace(rangeMin, rangeMax, 100)  # position
     parameter = [0, 0, 0, 0]
     for part in mechanism:
-        p = mp.taylor(lambda x: part.energyStored(x, 2.63-104*0.0008766/3, 0), 0.0000001, 4)
+        p = mp.taylor(lambda x: part.energyStored(x, 2.63-120*0.0008766/3, 0), 0.0000001, 4)
         parameter[0] = parameter[0] + p[1]
         parameter[1] = parameter[1] + 2*p[2]
         parameter[2] = parameter[2] + 3*p[3]
@@ -176,6 +184,7 @@ def computeMu(mechanism, newpath):
     yE = []
     for j in range(0, len(x)):
         yE.append(mp.polyval(parameter[::-1], x[j]).real)
+    plt.grid()
     plt.plot(x, yE, 'r')
     plt.savefig('ForceAsPositionANDPreloadPolynomialMurmin.png')
     plt.savefig(os.path.join(newpath, 'ForceAsPositionANDPreloadPolynomialMurmin.png'))
@@ -197,6 +206,7 @@ def computeMu(mechanism, newpath):
     yE = []
     for j in range(0, len(x)):
         yE.append(mp.polyval(parameter[::-1], x[j]).real)
+    plt.grid()
     plt.plot(x, yE, 'r')
     plt.savefig('ForceAsPositionANDPreloadPolynomialMurmax.png')
     plt.savefig(os.path.join(newpath, 'ForceAsPositionANDPreloadPolynomialMurmax.png'))
@@ -221,7 +231,7 @@ def computeForceAsPositionANDPreloadNumTaylorLin(mechanism, path):
     # setting the axes at the centre
     fig = plt.figure()
     ax = fig.add_subplot(1, 1, 1)
-    f = [2.63/2, 2.63-104*0.0008766/3]
+    f = [2.63/2, 2.63-120*0.0008766/3]
     # f = np.linspace(forceMin, forceMax, 5)  # force Preload
     x = np.linspace(rangeMin, rangeMax, 100)  # position
 
@@ -246,6 +256,7 @@ def computeForceAsPositionANDPreloadNumTaylorLin(mechanism, path):
         yEpol.append(mp.polyval(parameter[::-1], x[j]).real)
         yElin.append(mp.polyval(lin[2:4], x[j]).real)
     # plot the function
+    plt.grid()
     plt.plot(x, yEnum, 'r')
     plt.plot(x, yEpol, 'b')
     plt.plot(x, yElin, 'g')
@@ -276,6 +287,7 @@ def computeForceAsPositionANDPreloadNumTaylorLin(mechanism, path):
         lin = parameter[::-1]
         yElin.append(mp.polyval(lin[2:4], x[j]-0.00025-0.00001).real)
     # plot the function
+    plt.grid()
     plt.plot(x, yEnum, 'r')
     plt.plot(x, yEpol, 'b')
     plt.plot(x, yElin, 'g')
@@ -287,8 +299,9 @@ def computeRigidityAsPositionANDPreload12(mechanism, path):
     fig = plt.figure()
     ax = fig.add_subplot(1, 1, 1)
     #close up of the 0 rigidity region
-    f = np.linspace(2.63-104*0.0008766/3, 2.63-100*0.0008766/3, 4)  # force Preload
+    f = np.linspace(2.63-120*0.0008766/3, 2.63-116*0.0008766/3, 4)  # force Preload
     x = np.linspace(rangeMin, rangeMax, 100)  # position
+    plt.grid()
     for i in range(0, len(f)):
         yE = []
         for j in range(0, len(x)):
@@ -297,7 +310,6 @@ def computeRigidityAsPositionANDPreload12(mechanism, path):
                 Etot = Etot + mp.diff(lambda x: part.energyStored(x, f[i], 0), x[j],2)
             yE.append(Etot.real)
         # plot the function
-        plt.grid()
         plt.plot(x, yE, 'r')
     plt.savefig('RigidityAsPositionANDPreload12.png')
 
@@ -308,6 +320,7 @@ def computeRigidityAsPositionANDPreload13(mechanism, path):
     #close up of the max rigidity the axis can have ( preload at 1mm)
     f = np.linspace(2.63/2, 2.63/2+0.0008766/3, 2)  # force Preload
     x = np.linspace(rangeMin, rangeMax, 100)  # position
+    plt.grid()
     for i in range(0, len(f)):
         yE = []
         for j in range(0, len(x)):
@@ -316,7 +329,6 @@ def computeRigidityAsPositionANDPreload13(mechanism, path):
                 Etot = Etot + mp.diff(lambda x: part.energyStored(x, f[i], 0), x[j],2)
             yE.append(Etot.real)
         # plot the function
-        plt.grid()
         plt.plot(x, yE, 'r')
     plt.savefig('RigidityAsPositionANDPreload13.png')
 
