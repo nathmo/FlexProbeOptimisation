@@ -1,0 +1,37 @@
+﻿Study Static Analysis:1 started: 18.03.2023, 01:11:24
+Number of configurations: 1
+Default mesh: 4766 elements, 10154 nodes
+A model separates into 5 independent components
+Soft spring was added
+Solution time 1.4s
+Convergence rate: 50%
+Reached the total number of h refinements 
+Study        Worst Jacobian ratio :  1  on element 1 finished: 18.03.2023, 01:11:31
+Total time 0:00:07
+
+Study Static Analysis:1 started: 18.03.2023, 01:12:14
+Number of configurations: 1
+Study Static Analysis:1 finished: 18.03.2023, 01:12:14
+Total time 0:00:00
+
+Study Static Analysis:1 started: 18.03.2023, 01:12:30
+Number of configurations: 1
+Study Static Analysis:1 finished: 18.03.2023, 01:12:30
+Total time 0:00:00
+
+Study Static Analysis:1 started: 18.03.2023, 01:12:50
+Number of configurations: 1
+Study Static Analysis:1 finished: 18.03.2023, 01:12:51
+Total time 0:00:01
+
+Study Static Analysis:1 started: 18.03.2023, 01:13:22
+Number of configurations: 1
+Default mesh: 4766 elements, 10154 nodes
+A model separates into 5 independent components
+Soft spring was added
+Solution time 1.3s
+Convergence rate: 50%
+Reached the total number of h refinements 
+Study Static Analysis:1 finished: 18.03.2023, 01:13:24
+Total time 0:00:02
+

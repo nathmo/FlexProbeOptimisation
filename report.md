@@ -1,9 +1,4 @@
 # Paramètre utiliser pour le calcul des résultat
-![img_7.png](img_7.png)
-
-modele de demonstration.
-goal = plage du poid d'une plume (10 uN)
-MDF 6mm
 
 
 # 2 Principe de fonctionnement

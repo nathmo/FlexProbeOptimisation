@@ -64,6 +64,7 @@ def computeRigidityTableKeq(mechanism, path):
         plt.plot(x, yE, 'r')
     plt.savefig('computeRigidityTableKeq.png')
     plt.savefig(os.path.join(path, 'computeRigidityTableKeq.png'))
+
 def computeEnergy(mechanism, path):
     # setting the axes at the centre
     fig = plt.figure()
